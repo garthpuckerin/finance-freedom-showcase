@@ -63,6 +63,14 @@
   --accent-weak: oklch(0.955 calc(var(--aC) * 0.45) var(--aH));
   --accent-line: oklch(0.90 calc(var(--aC) * 0.55) var(--aH));
   --focus:       oklch(var(--aL) var(--aC) var(--aH) / 0.45);
+  /* Chart area-fill opacities — bumped on LIGHT so the mid-tone green/blue/teal
+     fills don't wash out on the near-white canvas. --fill-* = solid history /
+     dense end; --fc-* = the lighter forecast gradient (kept below --fill-* so
+     the forecast stays visually distinct from the solid history). */
+  --fill-dense:  0.26;
+  --fill-soft:   0.05;
+  --fc-dense:    0.16;
+  --fc-soft:     0.02;
 
   --rail:        oklch(0.205 calc(var(--nC) * 1.3) var(--nH)); /* sidebar / dark rail */
   --rail-2:      oklch(0.255 calc(var(--nC) * 1.3) var(--nH));
@@ -131,6 +139,11 @@
   --accent-weak: oklch(0.28 calc(var(--aC) * 0.5) var(--aH));
   --accent-line: oklch(0.40 calc(var(--aC) * 0.6) var(--aH));
   --focus:       oklch(calc(var(--aL) + 0.16) var(--aC) var(--aH) / 0.5);
+  /* Dark canvas reads fine with subtle fills — keep them low. */
+  --fill-dense:  0.18;
+  --fill-soft:   0;
+  --fc-dense:    0.11;
+  --fc-soft:     0.015;
 
   --pos:        oklch(0.74 0.16 152);
   --pos-weak:   oklch(0.30 0.06 152);

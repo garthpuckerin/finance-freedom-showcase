@@ -65,7 +65,7 @@ export function AreaTrend({ data, height = 220 }) {
       <svg width={w} height={height} style={{ display: 'block' }} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
         <defs>
           <linearGradient id="trendInc" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--pos)" stopOpacity="0.18" /><stop offset="100%" stopColor="var(--pos)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--pos)" style={{ stopOpacity: 'var(--fill-dense)' }} /><stop offset="100%" stopColor="var(--pos)" style={{ stopOpacity: 'var(--fill-soft)' }} />
           </linearGradient>
         </defs>
         {gridYs.map((gy, i) => <line key={i} x1={padL} y1={gy} x2={w - padR} y2={gy} stroke="var(--line)" strokeWidth="1" />)}
@@ -216,7 +216,7 @@ export function LineTrend({ data, height = 260, color = 'var(--accent)', fmtVal 
         <span style={{ fontSize: 12.5, color: 'var(--text-3)' }}>{hp.label}{hp.sub ? ` ${hp.sub}` : ''}</span>
       </div>
       <svg viewBox={`0 0 ${W} ${height}`} style={{ width: '100%', height: 'auto', display: 'block' }} onMouseLeave={() => setHover(null)}>
-        <defs><linearGradient id={gid} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.16" /><stop offset="100%" stopColor={color} stopOpacity="0" /></linearGradient></defs>
+        <defs><linearGradient id={gid} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} style={{ stopOpacity: 'var(--fill-dense)' }} /><stop offset="100%" stopColor={color} style={{ stopOpacity: 'var(--fill-soft)' }} /></linearGradient></defs>
         {[0, 0.25, 0.5, 0.75, 1].map((f, i) => { const v = min + (max - min) * f; return <g key={i}><line x1={pl} y1={ptop + ih - f * ih} x2={W - pr} y2={ptop + ih - f * ih} stroke="var(--line)" /><text x={pl - 8} y={ptop + ih - f * ih + 3} textAnchor="end" fontSize="10" fontFamily="var(--font-num)" fill="var(--text-faint)">{kfmt(v)}</text></g>; })}
         <polygon points={`${pts} ${xx(data.length - 1)},${ptop + ih} ${xx(0)},${ptop + ih}`} fill={`url(#${gid})`} />
         <polyline points={pts} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" />
@@ -292,8 +292,8 @@ export function CashFlowChart({ height = 300, compact = false, days = 60 }) {
               at the baseline (low amounts — more certain), fading up toward the
               projected line (higher amounts — less certain). */}
           <linearGradient id="cfArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.015" />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.11" />
+            <stop offset="0%" stopColor="var(--accent)" style={{ stopOpacity: 'var(--fc-soft)' }} />
+            <stop offset="100%" stopColor="var(--accent)" style={{ stopOpacity: 'var(--fc-dense)' }} />
           </linearGradient>
         </defs>
         {gridYs.map((v, i) => <g key={i}>
@@ -305,8 +305,8 @@ export function CashFlowChart({ height = 300, compact = false, days = 60 }) {
         <text x={padL + 4} y={y(floor) - 5} fontSize="8.5" fontFamily="var(--font-num)" fill="var(--neg)">SAFETY FLOOR · ${floor.toLocaleString()}</text>
         {/* future (forecast) — fading gradient = projection */}
         <polygon points={areaForecast} fill="url(#cfArea)" />
-        {/* past (actual) — solid fill at the gradient's peak density = permanence */}
-        <polygon points={areaActual} fill="var(--accent)" fillOpacity="0.18" />
+        {/* past (actual) — solid fill = permanence (denser on light so it doesn't wash out) */}
+        <polygon points={areaActual} fill="var(--accent)" style={{ fillOpacity: 'var(--fill-dense)' }} />
         <polyline points={toPts(actual)} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         {/* forecast dashed line */}
         <polyline points={toPts(fcLine)} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="5 5" strokeLinejoin="round" strokeLinecap="round" opacity="0.85" />
