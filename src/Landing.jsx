@@ -177,8 +177,8 @@ export function Landing({ onEnter }) {
             fully manual — no bank links, no cloud, no subscription, no AI required.
           </p>
           <p style={{ margin: '10px 0 0', fontSize: 12.5, lineHeight: 1.5, color: 'var(--text-3)' }}>
-            Desktop-first build — on a phone you&rsquo;ll get the mobile companion, a
-            proof of concept of the same system at phone scale (not the final mobile app).
+            Desktop-first build — on a phone you&rsquo;ll get the mobile companion:
+            the same system, focused for the essentials on the go.
           </p>
           <div
             style={{

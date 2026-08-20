@@ -196,11 +196,11 @@ function MbActivity() {
 function MbPocNote({ compact = false }) {
   return (
     <div style={Object.assign({}, mbCard, { padding: compact ? '11px 14px' : 16, background: 'var(--accent-weak)', border: '1px solid var(--line-2)' })}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)', marginBottom: 4 }}>Desktop-first app</div>
+      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)', marginBottom: 4 }}>Mobile companion</div>
       <div style={{ fontSize: 12.5, color: 'var(--text-2)', lineHeight: 1.5 }}>
-        This mobile companion is a proof of concept, not the final mobile build. The full 15-screen cockpit — registers, forecast, reports, budgets, rules — lives on desktop.
+        A focused companion for money on the go. The full 15-screen cockpit — registers, forecast, reports, budgets, rules — lives in the desktop app.
       </div>
-      <a href="?view=desktop" style={{ display: 'inline-block', marginTop: 8, fontSize: 12.5, fontWeight: 700, color: 'var(--accent)', textDecoration: 'none' }}>Open the desktop cockpit →</a>
+      <a href="?view=desktop" style={{ display: 'inline-block', marginTop: 8, fontSize: 12.5, fontWeight: 700, color: 'var(--accent)', textDecoration: 'none' }}>Open the full cockpit →</a>
     </div>
   );
 }
@@ -211,7 +211,7 @@ function MbPocScreen({ area }) {
       <div style={Object.assign({}, mbCard, { padding: 18, textAlign: 'center' })}>
         <div style={{ fontSize: 26, marginBottom: 8 }}>🖥</div>
         <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 5 }}>{area} lives on the desktop cockpit</div>
-        <div style={{ fontSize: 12.5, color: 'var(--text-3)', lineHeight: 1.55 }}>Finance Freedom is desktop-first; this mobile companion is a proof of concept. {area} hasn't been re-flowed for phones yet.</div>
+        <div style={{ fontSize: 12.5, color: 'var(--text-3)', lineHeight: 1.55 }}>The full 15-screen cockpit lives in the desktop app. {area} isn't at phone scale yet — open it on desktop.</div>
       </div>
       <MbPocNote compact />
     </div>

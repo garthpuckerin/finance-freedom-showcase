@@ -51,6 +51,24 @@ function Root() {
 
   React.useEffect(() => { syncViewAttr(!entered); }, [entered]);
 
+  // Desktop cockpit on a sub-desktop screen (the ?view=desktop escape hatch, the
+  // "open the full cockpit" bridge, or a wide-ish phone/tablet): the shell has no
+  // responsive styles, so compressing it into a phone width clips it into a mess.
+  // Instead, pin the layout viewport to true desktop width so the browser renders
+  // the cockpit at full size and fits-to-width + pinch-zoom (a legible desktop
+  // preview). Only while the desktop app is actually showing — the landing and
+  // the mobile companion stay device-width.
+  React.useEffect(() => {
+    const vp = document.querySelector('meta[name="viewport"]');
+    if (!vp) return;
+    const desktopView = entered && !isMobile && !isSmallScreen;
+    const narrow = window.innerWidth < 1024;
+    vp.setAttribute(
+      'content',
+      desktopView && narrow ? 'width=1180' : 'width=device-width, initial-scale=1.0'
+    );
+  }, [entered]);
+
   // Enter the demo — persist so reloads stay in. Sign-out lives in the apps.
   const enterDemo = React.useCallback(() => {
     try { sessionStorage.setItem(ENTERED_KEY, 'true'); } catch (e) {}
