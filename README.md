@@ -29,7 +29,9 @@ but refuses Quicken's interface.
 - **Budgeting your way** — pick a methodology (Envelopes, 50/30/20, Zero-based, FIRE,
   Pay-yourself-first) and the Dashboard, Budgets, and Insights all re-derive around it
 - **Accounts** grouped by type — cash, credit, investment, retirement, assets
-- **Bills & deposits** with autopay and a calendar view
+- **Bills & deposits** with autopay and a calendar view — *autopay auto-enters a
+  recurring bill into the register on schedule so forecasts and budgets reflect it;
+  it never connects to a bank or biller, and no real money moves*
 - **Investments** with cost basis and gain/loss
 - **Snowball / avalanche** debt-payoff planning
 - **Auto-categorization rules** matched against payees

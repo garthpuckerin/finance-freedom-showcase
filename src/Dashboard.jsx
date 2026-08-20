@@ -29,7 +29,11 @@ function BillRow({ b }) {
         <div style={{ fontSize: 12.5, color: 'var(--text)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.payee}</div>
         <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Due {b.date} · {b.cat}</div>
       </div>
-      {b.autopay && <Badge tone="info">AUTO</Badge>}
+      {b.autopay && (
+        <span title="Autopay: this bill is auto-entered in the app on schedule so forecasts and budgets reflect it — it is not a live bank payment, and no real money moves.">
+          <Badge tone="info">AUTO</Badge>
+        </span>
+      )}
       <div style={{ textAlign: 'right' }}>
         <div className="num" style={{ fontSize: 12.5, fontWeight: 600, color: urgent ? 'var(--neg)' : 'var(--text)' }}>${fmtN(b.amount)}</div>
         <div className="num" style={{ fontSize: 11, color: urgent ? 'var(--neg)' : 'var(--text-faint)' }}>{b.daysUntil}d</div>
