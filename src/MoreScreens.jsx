@@ -173,6 +173,13 @@ export function BillsScreen() {
   const D = AppData;
   const f = D.forecast;
   const events = f.eventMarks.map((e, i) => ({ ...e, id: i }));
+  // The calendar shows actual PAST activity from the register alongside the
+  // future scheduled events — a real activity calendar, not future-only. The
+  // "All scheduled" table below stays future-only (it IS a forward schedule).
+  // transactions carry `date` as a local ISO string ('YYYY-MM-DD'); parse to a
+  // LOCAL midnight Date (the 'T00:00:00' keeps it from shifting a day via UTC).
+  const pastCalEvents = D.transactions.map((t) => ({ date: new Date(t.date + 'T00:00:00'), label: t.payee, amt: t.amount, pos: t.amount > 0 }));
+  const calendarEvents = [...pastCalEvents, ...events];
   // KPIs DERIVED from the upcoming-bills list + forecast so they can't drift.
   const due7 = D.upcomingBills.filter(b => b.daysUntil <= 7);
   const due7Total = due7.reduce((s, b) => s + b.amount, 0);
@@ -186,7 +193,7 @@ export function BillsScreen() {
           <Stat k="On Autopay" v={`${autopayCount} of ${D.upcomingBills.length}`} d="bills automated" />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 'var(--gap)', alignItems: 'start' }}>
-          <BillsCalendar events={events} />
+          <BillsCalendar events={calendarEvents} />
           <Card title="Upcoming · this cycle">
             {D.upcomingBills.map(b => {
               const urgent = b.daysUntil <= 3;
