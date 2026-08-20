@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" data-temp="slate" data-accent="evergreen" data-theme="light" data-density="cozy" data-type="grotesk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ledger — Finance Freedom Design System</title>
+<!-- Design tokens inlined from ds/tokens.css so this page is fully self-contained (no relative asset refs). Google Fonts @import kept (external CDN, matches the app). -->
+<style>
+/* ============================================================
+   LEDGER — Finance Freedom Design System
+   The soul of MS Money, in 2026.
+   ------------------------------------------------------------
+   Token layer. Everything derives from a handful of axes:
+     • neutral temperature  → --nH (hue) / --nC (chroma)
+     • accent               → --aL/--aC/--aH
+     • appearance           → [data-theme="dark"]
+     • density              → [data-density]
+     • typeface personality → [data-type]
+   The Tweaks panel flips data-* attributes on <html>.
+   ============================================================ */
+
+/* ---- Fonts ---- */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* — Neutral axis (default: cool slate) — */
+  --nH: 256;
+  --nC: 0.010;
+
+  /* — Accent axis (default: evergreen) — */
+  --aL: 0.47;  --aC: 0.094; --aH: 159;
+  --on-accent: oklch(0.99 0.01 159);
+
+  /* — Money semantics (stable across temperatures) — */
+  --pos:        oklch(0.55 0.13 152);
+  --pos-weak:   oklch(0.95 0.04 152);
+  --neg:        oklch(0.55 0.18 25);
+  --neg-weak:   oklch(0.95 0.045 25);
+  --warn:       oklch(0.70 0.135 70);
+  --warn-weak:  oklch(0.95 0.05 80);
+  --info:       oklch(0.55 0.13 250);
+  --info-weak:  oklch(0.95 0.035 250);
+
+  /* category data-viz hues (categorical, 8) */
+  --cat-1: oklch(0.62 0.13 250);
+  --cat-2: oklch(0.60 0.12 152);
+  --cat-3: oklch(0.66 0.14 70);
+  --cat-4: oklch(0.58 0.16 25);
+  --cat-5: oklch(0.56 0.14 300);
+  --cat-6: oklch(0.60 0.10 195);
+  --cat-7: oklch(0.64 0.13 110);
+  --cat-8: oklch(0.58 0.10 330);
+
+  /* — Light appearance (derives from neutral axis) — */
+  --canvas:     oklch(0.975 calc(var(--nC) * 0.7) var(--nH));
+  --canvas-2:   oklch(0.962 calc(var(--nC) * 0.8) var(--nH));
+  --surface:    oklch(0.998 calc(var(--nC) * 0.25) var(--nH));
+  --surface-2:  oklch(0.978 calc(var(--nC) * 0.7) var(--nH));
+  --surface-3:  oklch(0.958 calc(var(--nC) * 0.9) var(--nH));
+  --inset:      oklch(0.945 var(--nC) var(--nH));
+  --line:       oklch(0.916 var(--nC) var(--nH));
+  --line-2:     oklch(0.878 var(--nC) var(--nH));
+  --line-strong:oklch(0.80 var(--nC) var(--nH));
+  --text:       oklch(0.255 calc(var(--nC) * 1.4) var(--nH));
+  --text-2:     oklch(0.448 calc(var(--nC) * 1.2) var(--nH));
+  --text-3:     oklch(0.585 var(--nC) var(--nH));
+  --text-faint: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
+
+  --accent:      oklch(var(--aL) var(--aC) var(--aH));
+  --accent-hi:   oklch(calc(var(--aL) - 0.06) var(--aC) var(--aH));
+  --accent-weak: oklch(0.955 calc(var(--aC) * 0.45) var(--aH));
+  --accent-line: oklch(0.90 calc(var(--aC) * 0.55) var(--aH));
+  --focus:       oklch(var(--aL) var(--aC) var(--aH) / 0.45);
+
+  --rail:        oklch(0.205 calc(var(--nC) * 1.3) var(--nH)); /* sidebar / dark rail */
+  --rail-2:      oklch(0.255 calc(var(--nC) * 1.3) var(--nH));
+  --rail-line:   oklch(1 0 0 / 0.08);
+  --rail-text:   oklch(0.96 calc(var(--nC) * 0.4) var(--nH));
+  --rail-text-2: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
+  --rail-text-3: oklch(0.55 calc(var(--nC) * 0.8) var(--nH));
+
+  --shadow-sm: 0 1px 2px oklch(var(--nH) 0 0 / 0), 0 1px 2px oklch(0.2 0.02 var(--nH) / 0.06);
+  --shadow:    0 1px 3px oklch(0.2 0.02 var(--nH) / 0.07), 0 4px 16px oklch(0.2 0.02 var(--nH) / 0.06);
+  --shadow-lg: 0 8px 40px oklch(0.2 0.02 var(--nH) / 0.13), 0 2px 8px oklch(0.2 0.02 var(--nH) / 0.08);
+
+  /* — Radius (mixed shapes: sharp tables / rounded cards) — */
+  --r-card: 14px;
+  --r-ctrl: 8px;
+  --r-chip: 6px;
+  --r-table: 3px;
+  --r-pill: 999px;
+
+  /* — Density (default: cozy) — */
+  --row-h: 36px;
+  --pad: 16px;
+  --pad-tight: 10px;
+  --gap: 14px;
+  --fs-table: 12.5px;
+
+  /* — Typeface (default: grotesk) — */
+  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display-tracking: -0.02em;
+  --display-weight: 700;
+}
+
+/* ====================== TEMPERATURES ====================== */
+[data-temp="slate"] { --nH: 256; --nC: 0.010; }
+[data-temp="stone"] { --nH: 75;  --nC: 0.011; }
+[data-temp="gray"]  { --nH: 0;   --nC: 0.0;   }
+[data-temp="paper"] { --nH: 83;  --nC: 0.020; }
+
+/* ======================== ACCENTS ========================= */
+[data-accent="evergreen"] { --aL: 0.47; --aC: 0.094; --aH: 159; --on-accent: oklch(0.99 0.01 159); }
+[data-accent="ink"]       { --aL: 0.47; --aC: 0.150; --aH: 262; --on-accent: oklch(0.99 0.01 262); }
+[data-accent="teal"]      { --aL: 0.52; --aC: 0.090; --aH: 198; --on-accent: oklch(0.99 0.01 198); }
+[data-accent="amber"]     { --aL: 0.62; --aC: 0.130; --aH: 64;  --on-accent: oklch(0.20 0.03 64); }
+[data-accent="violet"]    { --aL: 0.50; --aC: 0.170; --aH: 292; --on-accent: oklch(0.99 0.01 292); }
+
+/* ======================= DARK MODE ======================== */
+[data-theme="dark"] {
+  --canvas:     oklch(0.165 calc(var(--nC) * 1.1) var(--nH));
+  --canvas-2:   oklch(0.135 calc(var(--nC) * 1.1) var(--nH));
+  --surface:    oklch(0.205 calc(var(--nC) * 1.2) var(--nH));
+  --surface-2:  oklch(0.232 calc(var(--nC) * 1.2) var(--nH));
+  --surface-3:  oklch(0.262 calc(var(--nC) * 1.2) var(--nH));
+  --inset:      oklch(0.185 calc(var(--nC) * 1.1) var(--nH));
+  --line:       oklch(1 0 0 / 0.085);
+  --line-2:     oklch(1 0 0 / 0.13);
+  --line-strong:oklch(1 0 0 / 0.22);
+  --text:       oklch(0.965 calc(var(--nC) * 0.5) var(--nH));
+  --text-2:     oklch(0.74 calc(var(--nC) * 0.9) var(--nH));
+  --text-3:     oklch(0.60 calc(var(--nC) * 0.9) var(--nH));
+  --text-faint: oklch(0.50 calc(var(--nC) * 0.8) var(--nH));
+
+  --accent:      oklch(calc(var(--aL) + 0.16) calc(var(--aC) * 0.95) var(--aH));
+  --accent-hi:   oklch(calc(var(--aL) + 0.24) calc(var(--aC) * 0.9) var(--aH));
+  --accent-weak: oklch(0.28 calc(var(--aC) * 0.5) var(--aH));
+  --accent-line: oklch(0.40 calc(var(--aC) * 0.6) var(--aH));
+  --focus:       oklch(calc(var(--aL) + 0.16) var(--aC) var(--aH) / 0.5);
+
+  --pos:        oklch(0.74 0.16 152);
+  --pos-weak:   oklch(0.30 0.06 152);
+  --neg:        oklch(0.70 0.17 25);
+  --neg-weak:   oklch(0.30 0.07 25);
+  --warn:       oklch(0.79 0.14 75);
+  --warn-weak:  oklch(0.32 0.06 75);
+  --info:       oklch(0.72 0.13 250);
+  --info-weak:  oklch(0.30 0.05 250);
+
+  --rail:        oklch(0.135 calc(var(--nC) * 1.1) var(--nH));
+  --rail-2:      oklch(0.195 calc(var(--nC) * 1.2) var(--nH));
+  --rail-line:   oklch(1 0 0 / 0.07);
+  --rail-text:   oklch(0.95 calc(var(--nC) * 0.4) var(--nH));
+  --rail-text-2: oklch(0.66 calc(var(--nC) * 0.8) var(--nH));
+  --rail-text-3: oklch(0.50 calc(var(--nC) * 0.8) var(--nH));
+
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow:    0 2px 8px oklch(0 0 0 / 0.5);
+  --shadow-lg: 0 12px 48px oklch(0 0 0 / 0.6);
+
+  --cat-1: oklch(0.70 0.13 250); --cat-2: oklch(0.72 0.13 152);
+  --cat-3: oklch(0.76 0.14 70);  --cat-4: oklch(0.68 0.16 25);
+  --cat-5: oklch(0.68 0.15 300); --cat-6: oklch(0.70 0.10 195);
+  --cat-7: oklch(0.74 0.13 110); --cat-8: oklch(0.68 0.11 330);
+}
+
+/* ======================= DENSITIES ======================== */
+[data-density="compact"] { --row-h: 28px; --pad: 12px; --pad-tight: 7px;  --gap: 10px; --fs-table: 12px; }
+[data-density="cozy"]    { --row-h: 36px; --pad: 16px; --pad-tight: 10px; --gap: 14px; --fs-table: 12.5px; }
+[data-density="comfy"]   { --row-h: 46px; --pad: 22px; --pad-tight: 14px; --gap: 18px; --fs-table: 13.5px; }
+
+/* ==================== TYPE PERSONALITIES ================== */
+[data-type="grotesk"] {
+  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display-tracking: -0.02em; --display-weight: 700;
+}
+[data-type="humanist"] {
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "IBM Plex Sans", system-ui, sans-serif;
+  --display-tracking: -0.015em; --display-weight: 600;
+}
+[data-type="editorial"] {
+  --font-ui: "Source Sans 3", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --display-tracking: -0.01em; --display-weight: 600;
+}
+[data-type="technical"] {
+  --font-ui: "JetBrains Mono", ui-monospace, monospace;
+  --font-num: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: -0.03em; --display-weight: 700;
+}
+
+/* ====================== PRIMITIVES ======================== */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; letter-spacing: -0.01em; }
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 99px; border: 3px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-strong); background-clip: padding-box; }
+
+::selection { background: var(--accent-weak); color: var(--text); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-radius: 2px; }
+
+/* Reusable surfaces */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+}
+
+</style>
+<style>
+  body { line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+
+  /* ---- top control bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklch, var(--canvas) 86%, transparent);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .row { display: flex; align-items: center; gap: 22px; height: 56px; }
+  .brandmark { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+  .brandmark .glyph {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--rail);
+    color: var(--accent); display: grid; place-items: center; font-size: 16px; flex-shrink: 0;
+    border: 1px solid var(--rail-line);
+  }
+  .brandmark b { font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: var(--display-tracking); font-size: 15px; }
+  .brandmark small { color: var(--text-3); font-size: 11px; display: block; margin-top: -2px; }
+  .ctrl-group { display: flex; align-items: center; gap: 7px; }
+  .ctrl-group > span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600; }
+  .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-ctrl); padding: 2px; gap: 2px; }
+  .seg button {
+    font: inherit; font-size: 11.5px; font-weight: 500; border: 0; background: transparent; color: var(--text-2);
+    padding: 4px 9px; border-radius: 6px; cursor: pointer; line-height: 1.4;
+  }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); font-weight: 600; }
+  .dot { width: 18px; height: 18px; border-radius: 5px; border: 1px solid var(--line-2); cursor: pointer; padding: 0; }
+  .dot[aria-pressed="true"] { outline: 2px solid var(--text); outline-offset: 1px; }
+
+  /* ---- sections ---- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); font-weight: 700; margin-bottom: 12px; }
+  h1 { font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: var(--display-tracking); font-size: 60px; line-height: 1.02; margin: 0 0 18px; color: var(--text); }
+  h2 { font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: var(--display-tracking); font-size: 30px; margin: 0 0 8px; color: var(--text); }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-3); font-weight: 700; margin: 0 0 16px; }
+  .lede { font-size: 18px; color: var(--text-2); max-width: 64ch; }
+  .sec-intro { color: var(--text-2); max-width: 62ch; margin: 0 0 32px; font-size: 14.5px; }
+  .grid { display: grid; gap: 16px; }
+  .label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600; }
+  code { font-family: var(--font-num); font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 5px; color: var(--text-2); }
+
+  /* swatch cards */
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .sw { border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; background: var(--surface); }
+  .sw .chip { height: 76px; }
+  .sw .meta { padding: 10px 12px; }
+  .sw .meta b { font-size: 12.5px; font-weight: 600; display: block; }
+  .sw .meta code { background: transparent; border: 0; padding: 0; font-size: 10.5px; color: var(--text-faint); }
+
+  .ramp { display: flex; border-radius: var(--r-ctrl); overflow: hidden; border: 1px solid var(--line); }
+  .ramp div { flex: 1; height: 52px; display: flex; align-items: flex-end; padding: 5px; font-family: var(--font-num); font-size: 9px; }
+
+  /* type specimens */
+  .typecard { border: 1px solid var(--line); border-radius: var(--r-card); padding: 26px; background: var(--surface); }
+  .typecard.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .typecard .tag { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .typecard .tag .nm { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); }
+  .typecard .tag .pill { font-size: 10px; padding: 3px 9px; border-radius: var(--r-pill); background: var(--accent-weak); color: var(--accent); font-weight: 700; }
+  .specimen-display { font-size: 38px; line-height: 1.05; margin-bottom: 6px; }
+  .specimen-body { font-size: 14px; color: var(--text-2); max-width: 56ch; }
+  .specimen-num { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 26px; margin-top: 14px; letter-spacing: -0.01em; }
+
+  .scale-row { display: flex; align-items: baseline; gap: 20px; padding: 11px 0; border-bottom: 1px dashed var(--line); }
+  .scale-row .sz { width: 120px; flex-shrink: 0; }
+
+  /* glyph grid */
+  .glyphs { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
+  .gl { aspect-ratio: 1; border: 1px solid var(--line); border-radius: var(--r-ctrl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: var(--surface); }
+  .gl .m { font-size: 22px; color: var(--text); line-height: 1; }
+  .gl .n { font-size: 9.5px; color: var(--text-faint); }
+
+  /* components */
+  .btn { font: inherit; font-size: 13px; font-weight: 600; border-radius: var(--r-ctrl); padding: 8px 15px; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 7px; line-height: 1.3; white-space: nowrap; }
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover { background: var(--accent-hi); }
+  .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--line-2); }
+  .btn-secondary:hover { background: var(--surface-2); }
+  .btn-ghost { background: transparent; color: var(--text-2); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+  .btn-danger { background: var(--neg); color: white; }
+
+  .field { background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r-ctrl); padding: 8px 11px; font: inherit; font-size: 13px; color: var(--text); width: 100%; }
+  .field:focus { outline: 2px solid var(--focus); outline-offset: 0; border-color: var(--accent); }
+
+  .badge { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: var(--r-pill); display: inline-flex; align-items: center; gap: 5px; }
+  .badge.b-pos { background: var(--pos-weak); color: var(--pos); }
+  .badge.b-neg { background: var(--neg-weak); color: var(--neg); }
+  .badge.b-warn { background: var(--warn-weak); color: var(--warn); }
+  .badge.b-info { background: var(--info-weak); color: var(--info); }
+  .badge.b-neutral { background: var(--surface-3); color: var(--text-2); }
+
+  .flag { width: 22px; height: 22px; border-radius: var(--r-table); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-num); font-size: 11px; font-weight: 700; border: 1px solid; }
+  .flag.f-e { border-color: var(--warn); color: var(--warn); background: var(--warn-weak); }
+  .flag.f-c { border-color: var(--pos); color: var(--pos); background: var(--pos-weak); }
+  .flag.f-r { border-color: var(--pos); color: var(--pos); background: var(--pos-weak); }
+  .flag.f-u { border-color: var(--line-strong); color: transparent; }
+
+  .demo-grid { display: grid; gap: 28px 36px; }
+  .swrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  /* ledger anatomy */
+  .ledger { border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; background: var(--surface); }
+  .ledger table { width: 100%; border-collapse: collapse; font-size: var(--fs-table); }
+  .ledger thead th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); font-weight: 600; padding: 9px 12px; background: var(--surface-3); border-bottom: 1px solid var(--line-2); }
+  .ledger thead th.r, .ledger td.r { text-align: right; }
+  .ledger tbody td { padding: 0 12px; height: var(--row-h); border-bottom: 1px solid var(--line); color: var(--text); vertical-align: middle; }
+  .ledger tbody tr:nth-child(even) { background: var(--surface-2); }
+  .ledger tbody tr:hover { background: var(--accent-weak); }
+  .ledger .mono { font-family: var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .ledger .muted { color: var(--text-3); }
+
+  .stat { border: 1px solid var(--line); border-radius: var(--r-card); padding: 18px 20px; background: var(--surface); }
+  .stat .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); font-weight: 600; }
+  .stat .v { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-top: 7px; color: var(--text); }
+  .stat .d { font-size: 12.5px; margin-top: 5px; }
+
+  .annot { display: grid; grid-template-columns: 28px 1fr; gap: 0 12px; margin-top: 4px; }
+  .annot .num-tag { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-family: var(--font-num); font-size: 11px; font-weight: 700; }
+  .annot .txt { padding-bottom: 14px; }
+  .annot .txt b { font-size: 13.5px; }
+  .annot .txt p { margin: 2px 0 0; color: var(--text-2); font-size: 13px; }
+
+  .principle { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pcard { border: 1px solid var(--line); border-radius: var(--r-card); padding: 22px; background: var(--surface); }
+  .pcard .pn { font-family: var(--font-num); font-size: 12px; color: var(--accent); font-weight: 600; }
+  .pcard h4 { margin: 8px 0 6px; font-size: 16px; font-family: var(--font-display); letter-spacing: var(--display-tracking); font-weight: var(--display-weight); }
+  .pcard p { margin: 0; font-size: 13.5px; color: var(--text-2); }
+
+  /* mini charts */
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 110px; }
+  .bars .b { flex: 1; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.9; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+  .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+  .twocol { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 900px){ .swatches, .glyphs { grid-template-columns: repeat(4,1fr);} .twocol,.principle,.specimens{grid-template-columns:1fr;} }
+  .footer { padding: 40px 0 80px; color: var(--text-faint); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap row">
+    <div class="brandmark">
+      <div class="glyph">◷</div>
+      <div><b>Ledger</b><small>Finance Freedom · Design System v1</small></div>
+    </div>
+    <div class="ctrl-group"><span>Theme</span>
+      <div class="seg" data-axis="theme">
+        <button data-val="light" aria-pressed="true">Light</button>
+        <button data-val="dark">Dark</button>
+      </div>
+    </div>
+    <div class="ctrl-group"><span>Temp</span>
+      <div class="seg" data-axis="temp">
+        <button data-val="slate" aria-pressed="true">Slate</button>
+        <button data-val="stone">Stone</button>
+        <button data-val="gray">Gray</button>
+        <button data-val="paper">Paper</button>
+      </div>
+    </div>
+    <div class="ctrl-group"><span>Accent</span>
+      <div class="seg" data-axis="accent" style="padding:3px;">
+        <button class="dot" data-val="evergreen" aria-pressed="true" style="background:oklch(0.47 0.094 159)" title="Evergreen"></button>
+        <button class="dot" data-val="ink" style="background:oklch(0.47 0.15 262)" title="Ink Blue"></button>
+        <button class="dot" data-val="teal" style="background:oklch(0.52 0.09 198)" title="Teal"></button>
+        <button class="dot" data-val="amber" style="background:oklch(0.62 0.13 64)" title="Amber"></button>
+        <button class="dot" data-val="violet" style="background:oklch(0.5 0.17 292)" title="Violet"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- COVER -->
+  <section style="border-bottom:1px solid var(--line);">
+    <div class="eyebrow">Finance Freedom · Design System</div>
+    <h1>The soul of MS&nbsp;Money,<br/>in 2026.</h1>
+    <p class="lede">Ledger is a desktop-first, data-dense system for the personal-finance app built to succeed Microsoft Money. It keeps what made Money feel like <em>command over your money</em> — the register, the running balance, the reconcile flags, the account tree — and rebuilds it with restrained, modern craft: hairline data tables nested in soft cards, oklch color that re-skins on demand, tabular money typography, and a single quiet accent.</p>
+    <div class="swrow" style="margin-top:30px;">
+      <span class="badge b-neutral">Desktop-first</span>
+      <span class="badge b-neutral">4 temperatures</span>
+      <span class="badge b-neutral">5 accents</span>
+      <span class="badge b-neutral">Light + Dark</span>
+      <span class="badge b-neutral">3 densities</span>
+      <span class="badge b-neutral">4 type personalities</span>
+    </div>
+    <p style="margin-top:24px; color:var(--text-3); font-size:13px;">Use the controls in the header to re-skin this entire document live. Every screen in the product is built from these same tokens.</p>
+  </section>
+
+  <!-- PRINCIPLES -->
+  <section>
+    <div class="eyebrow">Foundations</div>
+    <h2>Five operating principles</h2>
+    <p class="sec-intro">The rules that keep a feature-dense app legible. When a decision is unclear, these break the tie.</p>
+    <div class="principle">
+      <div class="pcard"><div class="pn">01</div><h4>The number is the hero</h4><p>Every monetary value is tabular and right-aligned so columns of money scan as a column. Positive and negative carry semantic color, never the surrounding chrome.</p></div>
+      <div class="pcard"><div class="pn">02</div><h4>Sharp tables, soft frames</h4><p>The ledger itself is crisp and near-edgeless for density. It lives inside a rounded, lightly-shadowed card. Structure is communicated by hairlines and zebra, not boxes around every cell.</p></div>
+      <div class="pcard"><div class="pn">03</div><h4>One quiet accent</h4><p>A single accent marks the live, the actionable, the focused. Money keeps its own green/red. Color is information — never decoration.</p></div>
+      <div class="pcard"><div class="pn">04</div><h4>Density is a setting, not a default</h4><p>Built compact-capable from the start. Spacing, row height and type scale move together on one axis so power users can pack the screen without breaking rhythm.</p></div>
+      <div class="pcard"><div class="pn">05</div><h4>Keyboard before mouse</h4><p>This is a tool, not a feed. Shortcuts, inline editing in the register, and a command palette are first-class — the mouse is the fallback.</p></div>
+    </div>
+  </section>
+
+  <!-- COLOR -->
+  <section>
+    <div class="eyebrow">Color</div>
+    <h2>A re-skinnable neutral, one accent, stable money</h2>
+    <p class="sec-intro">Neutrals are generated in oklch from two variables — a hue and a chroma — so the whole UI shifts temperature without re-picking a single value. Money semantics stay constant so a number means the same thing in every skin.</p>
+
+    <h3>Surfaces &amp; ink <code>— live, follows Temp + Theme</code></h3>
+    <div class="swatches" style="margin-bottom:34px;">
+      <div class="sw"><div class="chip" style="background:var(--canvas)"></div><div class="meta"><b>Canvas</b><code>--canvas</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--surface); border-bottom:1px solid var(--line)"></div><div class="meta"><b>Surface</b><code>--surface</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--surface-2)"></div><div class="meta"><b>Surface 2</b><code>--surface-2 · zebra</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--surface-3)"></div><div class="meta"><b>Surface 3</b><code>--surface-3 · headers</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--line-strong)"></div><div class="meta"><b>Line strong</b><code>--line-strong</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--text-3)"></div><div class="meta"><b>Text muted</b><code>--text-3</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--text-2)"></div><div class="meta"><b>Text 2</b><code>--text-2</code></div></div>
+      <div class="sw"><div class="chip" style="background:var(--text)"></div><div class="meta"><b>Ink</b><code>--text</code></div></div>
+    </div>
+
+    <div class="twocol">
+      <div>
+        <h3>Accent <code>— live, follows Accent</code></h3>
+        <div class="swatches" style="grid-template-columns:repeat(3,1fr);">
+          <div class="sw"><div class="chip" style="background:var(--accent)"></div><div class="meta"><b>Accent</b><code>--accent</code></div></div>
+          <div class="sw"><div class="chip" style="background:var(--accent-hi)"></div><div class="meta"><b>Accent hi</b><code>--accent-hi · hover</code></div></div>
+          <div class="sw"><div class="chip" style="background:var(--accent-weak)"></div><div class="meta"><b>Accent weak</b><code>--accent-weak · tint</code></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Money &amp; status <code>— stable</code></h3>
+        <div class="swatches" style="grid-template-columns:repeat(4,1fr);">
+          <div class="sw"><div class="chip" style="background:var(--pos)"></div><div class="meta"><b>Positive</b><code>--pos</code></div></div>
+          <div class="sw"><div class="chip" style="background:var(--neg)"></div><div class="meta"><b>Negative</b><code>--neg</code></div></div>
+          <div class="sw"><div class="chip" style="background:var(--warn)"></div><div class="meta"><b>Warning</b><code>--warn</code></div></div>
+          <div class="sw"><div class="chip" style="background:var(--info)"></div><div class="meta"><b>Info</b><code>--info</code></div></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:34px;">Categorical palette <code>— charts, categories, envelopes</code></h3>
+    <div class="ramp">
+      <div style="background:var(--cat-1)">cat-1</div><div style="background:var(--cat-2)">cat-2</div><div style="background:var(--cat-3)">cat-3</div><div style="background:var(--cat-4)">cat-4</div>
+      <div style="background:var(--cat-5)">cat-5</div><div style="background:var(--cat-6)">cat-6</div><div style="background:var(--cat-7)">cat-7</div><div style="background:var(--cat-8)">cat-8</div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section>
+    <div class="eyebrow">Typography</div>
+    <h2>One numeral face, four personalities</h2>
+    <p class="sec-intro">All money runs in a single tabular monospace (IBM&nbsp;Plex&nbsp;Mono) so figures align to the pixel — this never changes. The UI face is a switchable "personality": pick the voice of the build. The chosen hero is <b>Grotesk</b>.</p>
+
+    <div class="grid specimens" style="grid-template-columns:1fr 1fr;">
+      <div class="typecard" data-type-demo="grotesk">
+        <div class="tag"><span class="nm">Grotesk · Helvetica Neue</span><span class="pill">HERO</span></div>
+        <div class="specimen-display" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:700; letter-spacing:-0.02em;">Net worth grew 4.2%</div>
+        <div class="specimen-body" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Neutral, institutional, invisible. Gets out of the way of the data. The default voice of Finance&nbsp;Freedom.</div>
+        <div class="specimen-num" style="font-family:'IBM Plex Mono',monospace;">$248,510.42</div>
+      </div>
+      <div class="typecard" data-type-demo="humanist">
+        <div class="tag"><span class="nm">Humanist · IBM Plex Sans</span><span class="pill" style="background:var(--surface-3);color:var(--text-3)">ALT</span></div>
+        <div class="specimen-display" style="font-family:'IBM Plex Sans',sans-serif; font-weight:600; letter-spacing:-0.015em;">Net worth grew 4.2%</div>
+        <div class="specimen-body" style="font-family:'IBM Plex Sans',sans-serif;">Warmer and a touch more approachable while still engineered. Good for a friendlier consumer build.</div>
+        <div class="specimen-num" style="font-family:'IBM Plex Mono',monospace;">$248,510.42</div>
+      </div>
+      <div class="typecard" data-type-demo="editorial">
+        <div class="tag"><span class="nm">Editorial · Source Serif + Sans</span><span class="pill" style="background:var(--surface-3);color:var(--text-3)">ALT</span></div>
+        <div class="specimen-display" style="font-family:'Source Serif 4',Georgia,serif; font-weight:600; letter-spacing:-0.01em;">Net worth grew 4.2%</div>
+        <div class="specimen-body" style="font-family:'Source Sans 3',sans-serif;">A serif display over a clean sans body. Distinguished and calm — for a "private bank" register.</div>
+        <div class="specimen-num" style="font-family:'IBM Plex Mono',monospace;">$248,510.42</div>
+      </div>
+      <div class="typecard" data-type-demo="technical">
+        <div class="tag"><span class="nm">Technical · JetBrains Mono</span><span class="pill" style="background:var(--surface-3);color:var(--text-3)">ALT</span></div>
+        <div class="specimen-display" style="font-family:'JetBrains Mono',monospace; font-weight:700; letter-spacing:-0.03em;">Net worth grew 4.2%</div>
+        <div class="specimen-body" style="font-family:'JetBrains Mono',monospace; font-size:13px;">Mono everywhere. Maximal terminal energy for the power-user / Bloomberg-grade build.</div>
+        <div class="specimen-num" style="font-family:'JetBrains Mono',monospace;">$248,510.42</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:38px;">Type scale <code>— follows the active personality</code></h3>
+    <div>
+      <div class="scale-row"><div class="sz label">Display / 60</div><div style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:44px;letter-spacing:var(--display-tracking);">Good morning, Alex</div></div>
+      <div class="scale-row"><div class="sz label">H2 / 30</div><div style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:30px;letter-spacing:var(--display-tracking);">Account Register</div></div>
+      <div class="scale-row"><div class="sz label">Title / 18</div><div style="font-size:18px;font-weight:600;">Upcoming bills &amp; deposits</div></div>
+      <div class="scale-row"><div class="sz label">Body / 14</div><div style="font-size:14px;color:var(--text-2)">Standard reading size for descriptions and secondary content.</div></div>
+      <div class="scale-row"><div class="sz label">Table / 12.5</div><div style="font-size:12.5px;">Dense table row text — the workhorse of the register.</div></div>
+      <div class="scale-row"><div class="sz label">Numeral / tab</div><div class="num" style="font-size:20px;">1,204,587.09 · −482.50 · +9,500.00</div></div>
+      <div class="scale-row"><div class="sz label">Micro / 10</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-faint);font-weight:600;">Section label · reconciled</div></div>
+    </div>
+  </section>
+
+  <!-- ICONOGRAPHY -->
+  <section>
+    <div class="eyebrow">Iconography</div>
+    <h2>Geometric glyphs, not illustrations</h2>
+    <p class="sec-intro">Navigation and actions use a curated set of geometric Unicode marks — flat, monoline, and weightless. They read as quiet structural marks rather than decorative icons, which suits a dense pro tool and never goes out of style.</p>
+    <div class="glyphs">
+      <div class="gl"><span class="m">▦</span><span class="n">dashboard</span></div>
+      <div class="gl"><span class="m">≡</span><span class="n">accounts</span></div>
+      <div class="gl"><span class="m">⌕</span><span class="n">search</span></div>
+      <div class="gl"><span class="m">◫</span><span class="n">budgets</span></div>
+      <div class="gl"><span class="m">⇄</span><span class="n">transfers</span></div>
+      <div class="gl"><span class="m">◷</span><span class="n">calendar</span></div>
+      <div class="gl"><span class="m">◬</span><span class="n">invest</span></div>
+      <div class="gl"><span class="m">◈</span><span class="n">net worth</span></div>
+      <div class="gl"><span class="m">〜</span><span class="n">cash flow</span></div>
+      <div class="gl"><span class="m">◉</span><span class="n">insights</span></div>
+      <div class="gl"><span class="m">▤</span><span class="n">reports</span></div>
+      <div class="gl"><span class="m">⊞</span><span class="n">tax</span></div>
+      <div class="gl"><span class="m">◎</span><span class="n">goals</span></div>
+      <div class="gl"><span class="m">⊖</span><span class="n">debt</span></div>
+      <div class="gl"><span class="m">⊜</span><span class="n">rules</span></div>
+      <div class="gl"><span class="m">⊘</span><span class="n">subscriptions</span></div>
+      <div class="gl"><span class="m">✦</span><span class="n">assistant</span></div>
+      <div class="gl"><span class="m">⚙</span><span class="n">settings</span></div>
+      <div class="gl"><span class="m">↑</span><span class="n">expense</span></div>
+      <div class="gl"><span class="m">↓</span><span class="n">income</span></div>
+      <div class="gl"><span class="m">⚑</span><span class="n">reconcile</span></div>
+      <div class="gl"><span class="m">◷</span><span class="n">scheduled</span></div>
+      <div class="gl"><span class="m">⊕</span><span class="n">add</span></div>
+      <div class="gl"><span class="m">⋯</span><span class="n">more</span></div>
+    </div>
+  </section>
+
+  <!-- SHAPE & ELEVATION -->
+  <section>
+    <div class="eyebrow">Shape &amp; Elevation</div>
+    <h2>Mixed radii, restrained depth</h2>
+    <p class="sec-intro">Containers are rounded and softly raised. The data inside them is sharp. Shadows are used sparingly — for things that genuinely float (menus, drawers, the command palette), not for every card.</p>
+    <div class="twocol">
+      <div class="grid" style="grid-template-columns:1fr 1fr 1fr; gap:14px;">
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);"></div><div class="label" style="margin-top:10px;">Card · 14px</div></div>
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-ctrl);"></div><div class="label" style="margin-top:10px;">Control · 8px</div></div>
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-table);"></div><div class="label" style="margin-top:10px;">Table cell · 3px</div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr 1fr; gap:14px;">
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-sm);"></div><div class="label" style="margin-top:10px;">sm · resting card</div></div>
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow);"></div><div class="label" style="margin-top:10px;">md · popover</div></div>
+        <div style="text-align:center;"><div style="height:80px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-lg);"></div><div class="label" style="margin-top:10px;">lg · drawer / palette</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS -->
+  <section>
+    <div class="eyebrow">Components</div>
+    <h2>The working parts</h2>
+    <p class="sec-intro">Controls are compact and decisive. Everything below is rendered straight from the tokens — change theme, temperature or accent above and watch them follow.</p>
+
+    <div class="demo-grid" style="grid-template-columns:1fr 1fr;">
+      <div>
+        <h3>Buttons</h3>
+        <div class="swrow">
+          <button class="btn btn-primary">⊕ Add transaction</button>
+          <button class="btn btn-secondary">Reconcile</button>
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+      <div>
+        <h3>Inputs</h3>
+        <div class="swrow" style="gap:12px;">
+          <input class="field" style="flex:1" placeholder="Payee…" value="Whole Foods Market" />
+          <input class="field num" style="width:120px; text-align:right;" value="−84.20" />
+        </div>
+      </div>
+      <div>
+        <h3>Badges</h3>
+        <div class="swrow">
+          <span class="badge b-pos">▲ +4.2%</span>
+          <span class="badge b-neg">▼ −1.8%</span>
+          <span class="badge b-warn">Due in 3d</span>
+          <span class="badge b-info">Scheduled</span>
+          <span class="badge b-neutral">Uncategorized</span>
+        </div>
+      </div>
+      <div>
+        <h3>Reconcile flags <code>— Money DNA</code></h3>
+        <div class="swrow" style="gap:14px; align-items:center;">
+          <span style="display:flex;align-items:center;gap:6px;"><span class="flag f-u"></span><span class="label">Unreconciled</span></span>
+          <span style="display:flex;align-items:center;gap:6px;"><span class="flag f-e">E</span><span class="label">E-cleared</span></span>
+          <span style="display:flex;align-items:center;gap:6px;"><span class="flag f-c">C</span><span class="label">Cleared</span></span>
+          <span style="display:flex;align-items:center;gap:6px;"><span class="flag f-r">⚑</span><span class="label">Reconciled</span></span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px;">Stat cards</h3>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="stat"><div class="k">Net worth</div><div class="v">$248,510</div><div class="d pos">▲ $3,040 this month</div></div>
+      <div class="stat"><div class="k">Monthly income</div><div class="v">$9,500</div><div class="d" style="color:var(--text-3)">vs $9,180 avg</div></div>
+      <div class="stat"><div class="k">Monthly spend</div><div class="v">$6,284</div><div class="d neg">▲ $540 vs last mo</div></div>
+      <div class="stat"><div class="k">Savings rate</div><div class="v">33.9%</div><div class="d" style="color:var(--warn)">Goal: 15%</div></div>
+    </div>
+  </section>
+
+  <!-- THE LEDGER -->
+  <section>
+    <div class="eyebrow">Signature Pattern</div>
+    <h2>The Ledger</h2>
+    <p class="sec-intro">The account register is the soul of the product — the one screen a Money loyalist will recognize instantly. It's a sharp, dense, keyboard-navigable table living inside a soft card: tabular figures, a running balance on every line, payee + category, and a clickable reconcile flag. Zebra striping does the structural work so the grid stays edgeless.</p>
+
+    <div class="ledger">
+      <table>
+        <thead><tr>
+          <th style="width:34px;">⚑</th><th style="width:92px;">Date</th><th>Payee</th><th>Category</th>
+          <th class="r" style="width:110px;">Payment</th><th class="r" style="width:110px;">Deposit</th><th class="r" style="width:130px;">Balance</th>
+        </tr></thead>
+        <tbody>
+          <tr><td><span class="flag f-r" style="width:18px;height:18px;font-size:9px;">⚑</span></td><td class="mono muted">05/28</td><td>Employer Payroll</td><td class="muted">Income : Salary</td><td class="r mono"></td><td class="r mono pos">9,500.00</td><td class="r mono">248,510.42</td></tr>
+          <tr><td><span class="flag f-c" style="width:18px;height:18px;font-size:9px;">C</span></td><td class="mono muted">05/27</td><td>Whole Foods Market</td><td class="muted">Food : Groceries</td><td class="r mono neg">84.20</td><td class="r mono"></td><td class="r mono">239,010.42</td></tr>
+          <tr><td><span class="flag f-c" style="width:18px;height:18px;font-size:9px;">C</span></td><td class="mono muted">05/26</td><td>Pacific Gas &amp; Electric</td><td class="muted">Bills : Utilities</td><td class="r mono neg">142.88</td><td class="r mono"></td><td class="r mono">239,094.62</td></tr>
+          <tr><td><span class="flag f-e" style="width:18px;height:18px;font-size:9px;">E</span></td><td class="mono muted">05/25</td><td>Transfer → Vanguard</td><td class="muted">Transfer</td><td class="r mono neg">1,500.00</td><td class="r mono"></td><td class="r mono">239,237.50</td></tr>
+          <tr><td><span class="flag f-u" style="width:18px;height:18px;"></span></td><td class="mono muted">05/24</td><td>Blue Bottle Coffee</td><td class="muted" style="color:var(--warn)">Uncategorized</td><td class="r mono neg">6.75</td><td class="r mono"></td><td class="r mono">240,737.50</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
+      <div class="annot">
+        <div class="num-tag">1</div><div class="txt"><b>Reconcile flag, first column</b><p>A single click cycles uncleared → E-cleared → cleared → reconciled. The most-used Money muscle memory, preserved.</p></div>
+        <div class="num-tag">2</div><div class="txt"><b>Tabular money, right-aligned</b><p>Payment and Deposit are split columns; decimals line up so the eye can sum a column at a glance.</p></div>
+      </div>
+      <div class="annot">
+        <div class="num-tag">3</div><div class="txt"><b>Running balance, always present</b><p>The rightmost column never disappears — the defining feature of a register versus a transaction list.</p></div>
+        <div class="num-tag">4</div><div class="txt"><b>Uncategorized is a warning, not an error</b><p>Gaps in data are surfaced gently in the warning hue, inviting a fix without alarm.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASH FLOW FORECAST -->
+  <section>
+    <div class="eyebrow">Signature Pattern</div>
+    <h2>The Cash-Flow Forecast</h2>
+    <p class="sec-intro">Money's other defining view: not what you <em>have</em>, but what you <em>will have</em>. A single balance line runs from history straight into the future — solid for what's reconciled, dashed for what's projected from scheduled bills and deposits. A "Today" divider splits the two, event ticks mark each upcoming transaction, and a low-balance threshold turns the line red the moment the projection would dip below your safety floor.</p>
+
+    <div class="stat" style="padding:22px 24px;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px;">
+        <div>
+          <div class="k">Checking · projected balance</div>
+          <div style="font-size:13px;color:var(--text-3);margin-top:3px;">Next 60 days · low of <span class="num neg">$420.18</span> on Jun 18</div>
+        </div>
+        <div class="swrow" style="gap:14px;">
+          <span class="legend" style="margin:0;"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><i style="width:14px;height:2px;border-radius:2px;background:var(--accent);display:inline-block;"></i>Actual</span></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><i style="width:14px;height:0;border-top:2px dashed var(--accent);display:inline-block;"></i>Forecast</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><i style="width:11px;height:11px;border-radius:2px;background:var(--neg);display:inline-block;"></i>Below floor</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 760 230" style="width:100%; height:auto; display:block;" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="cfFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.20"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- gridlines -->
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="56" y1="40" x2="740" y2="40"/>
+          <line x1="56" y1="90" x2="740" y2="90"/>
+          <line x1="56" y1="140" x2="740" y2="140"/>
+          <line x1="56" y1="186" x2="740" y2="186"/>
+        </g>
+        <!-- y labels -->
+        <g fill="var(--text-faint)" font-family="var(--font-num)" font-size="9" text-anchor="end">
+          <text x="48" y="44">$8k</text><text x="48" y="94">$5k</text><text x="48" y="144">$2k</text><text x="48" y="190">$0</text>
+        </g>
+        <!-- low-balance floor -->
+        <line x1="56" y1="172" x2="740" y2="172" stroke="var(--neg)" stroke-width="1" stroke-dasharray="2 4" opacity="0.7"/>
+        <text x="60" y="168" fill="var(--neg)" font-family="var(--font-num)" font-size="8.5">SAFETY FLOOR · $1,000</text>
+        <!-- area fill (actual portion) -->
+        <path d="M56,120 L120,108 L184,128 L248,96 L312,110 L398,86 L398,186 L56,186 Z" fill="url(#cfFill)"/>
+        <!-- actual line (solid) -->
+        <polyline points="56,120 120,108 184,128 248,96 312,110 398,86" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- forecast line (dashed) -->
+        <polyline points="398,86 462,124 528,150 560,168 596,178 596,178 632,150 696,96 740,78" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="5 5" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>
+        <!-- danger segment near the dip -->
+        <polyline points="528,150 560,168 596,178 632,150" fill="none" stroke="var(--neg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- today divider -->
+        <line x1="398" y1="24" x2="398" y2="186" stroke="var(--text-2)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="398" cy="86" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+        <rect x="370" y="12" width="56" height="16" rx="4" fill="var(--text)"/>
+        <text x="398" y="23" fill="var(--surface)" font-family="var(--font-num)" font-size="9" font-weight="700" text-anchor="middle">TODAY</text>
+        <!-- low point marker -->
+        <circle cx="596" cy="178" r="4.5" fill="var(--neg)"/>
+        <!-- event ticks: bills (down) + deposit (up) -->
+        <g font-family="var(--font-num)" font-size="11">
+          <text x="462" y="210" fill="var(--neg)" text-anchor="middle">▾</text>
+          <text x="528" y="210" fill="var(--neg)" text-anchor="middle">▾</text>
+          <text x="596" y="210" fill="var(--neg)" text-anchor="middle">▾</text>
+          <text x="632" y="210" fill="var(--pos)" text-anchor="middle">▴</text>
+        </g>
+        <g font-family="var(--font-ui)" font-size="8.5" fill="var(--text-faint)" text-anchor="middle">
+          <text x="462" y="224">Rent</text>
+          <text x="528" y="224">Card</text>
+          <text x="596" y="224">Utils</text>
+          <text x="632" y="224" fill="var(--pos)">Payday</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
+      <div class="annot">
+        <div class="num-tag">1</div><div class="txt"><b>One line, two states</b><p>Solid = reconciled history. Dashed = projected from scheduled bills, recurring transactions and predicted income. The eye reads continuity, not two charts.</p></div>
+        <div class="num-tag">2</div><div class="txt"><b>The "Today" divider</b><p>A quiet vertical rule anchors the present. Everything left already happened; everything right is a forecast you can act on.</p></div>
+      </div>
+      <div class="annot">
+        <div class="num-tag">3</div><div class="txt"><b>Safety floor &amp; danger segment</b><p>Set a minimum balance; the line turns negative-red wherever the projection crosses below it, with the low point marked. This is the warning Money was famous for.</p></div>
+        <div class="num-tag">4</div><div class="txt"><b>Event ticks</b><p>Each upcoming bill (▾) and deposit (▴) is marked on the axis at its date, so a dip always has a cause you can trace.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA VIZ -->
+  <section>
+    <div class="eyebrow">Data Visualization</div>
+    <h2>Quiet charts, confident categories</h2>
+    <p class="sec-intro">Charts default to a single accent or money-semantic hue and only reach for the categorical palette when a series genuinely needs to be told apart. Axes and gridlines are hairlines; the data is the brightest thing on screen.</p>
+    <div class="twocol">
+      <div class="stat">
+        <div class="k" style="margin-bottom:16px;">Spending · last 12 weeks</div>
+        <div class="bars">
+          <div class="b" style="height:40%"></div><div class="b" style="height:55%"></div><div class="b" style="height:48%"></div>
+          <div class="b" style="height:70%"></div><div class="b" style="height:62%"></div><div class="b" style="height:80%"></div>
+          <div class="b" style="height:58%"></div><div class="b" style="height:90%"></div><div class="b" style="height:66%"></div>
+          <div class="b" style="height:74%"></div><div class="b" style="height:52%"></div><div class="b" style="height:100%"></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="k" style="margin-bottom:16px;">By category</div>
+        <div style="display:flex;height:14px;border-radius:99px;overflow:hidden;">
+          <div style="flex:32;background:var(--cat-1)"></div><div style="flex:24;background:var(--cat-2)"></div>
+          <div style="flex:18;background:var(--cat-3)"></div><div style="flex:14;background:var(--cat-4)"></div>
+          <div style="flex:12;background:var(--cat-5)"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--cat-1)"></i>Housing 32%</span>
+          <span><i style="background:var(--cat-2)"></i>Food 24%</span>
+          <span><i style="background:var(--cat-3)"></i>Transport 18%</span>
+          <span><i style="background:var(--cat-4)"></i>Shopping 14%</span>
+          <span><i style="background:var(--cat-5)"></i>Other 12%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE -->
+  <section style="border-bottom:0;">
+    <div class="eyebrow">Voice &amp; Motion</div>
+    <h2>Plain-spoken, fast, never cute</h2>
+    <div class="twocol">
+      <div>
+        <h3>Voice</h3>
+        <p class="sec-intro" style="margin-bottom:14px;">Speak like a trusted bookkeeper: precise, calm, second-person. Numbers and dates are exact. No exclamation marks on money. "You spent $540 more on dining than last month," not "Whoa, big spender! 🎉"</p>
+        <div class="swrow">
+          <span class="badge b-pos">Clear</span><span class="badge b-pos">Exact</span><span class="badge b-pos">Calm</span>
+          <span class="badge b-neg" style="opacity:.7">Not hype</span><span class="badge b-neg" style="opacity:.7">Not jargon</span>
+        </div>
+      </div>
+      <div>
+        <h3>Motion</h3>
+        <p class="sec-intro" style="margin-bottom:0;">Motion is functional: 120–180ms ease for state, 200–260ms for drawers and the command palette. Numbers may count up on first paint, but the register never animates rows on scroll. If motion doesn't aid comprehension, it doesn't ship.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Ledger — Finance Freedom Design System v1 · generated as a living document. Every token here drives the product screens 1:1.</div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  document.querySelectorAll('.seg').forEach(seg => {
+    const axis = seg.dataset.axis;
+    seg.addEventListener('click', e => {
+      const btn = e.target.closest('button'); if (!btn) return;
+      root.setAttribute('data-' + axis, btn.dataset.val);
+      seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+/* ============================================================
+   LEDGER — Finance Freedom Design System
+   The soul of MS Money, in 2026.
+   ------------------------------------------------------------
+   Token layer. Everything derives from a handful of axes:
+     • neutral temperature  → --nH (hue) / --nC (chroma)
+     • accent               → --aL/--aC/--aH
+     • appearance           → [data-theme="dark"]
+     • density              → [data-density]
+     • typeface personality → [data-type]
+   Appearance controls flip data-* attributes on <html> (see theme.js).
+   ============================================================ */
+
+/* ---- Fonts ---- */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* — Neutral axis (default: cool slate) — */
+  --nH: 256;
+  --nC: 0.010;
+
+  /* — Accent axis (default: evergreen) — */
+  --aL: 0.47;  --aC: 0.094; --aH: 159;
+  --on-accent: oklch(0.99 0.01 159);
+
+  /* — Money semantics (stable across temperatures) — */
+  --pos:        oklch(0.55 0.13 152);
+  --pos-weak:   oklch(0.95 0.04 152);
+  --neg:        oklch(0.55 0.18 25);
+  --neg-weak:   oklch(0.95 0.045 25);
+  --warn:       oklch(0.70 0.135 70);
+  --warn-weak:  oklch(0.95 0.05 80);
+  --info:       oklch(0.55 0.13 250);
+  --info-weak:  oklch(0.95 0.035 250);
+
+  /* category data-viz hues (categorical, 8) */
+  --cat-1: oklch(0.62 0.13 250);
+  --cat-2: oklch(0.60 0.12 152);
+  --cat-3: oklch(0.66 0.14 70);
+  --cat-4: oklch(0.58 0.16 25);
+  --cat-5: oklch(0.56 0.14 300);
+  --cat-6: oklch(0.60 0.10 195);
+  --cat-7: oklch(0.64 0.13 110);
+  --cat-8: oklch(0.58 0.10 330);
+
+  /* — Light appearance (derives from neutral axis) — */
+  --canvas:     oklch(0.975 calc(var(--nC) * 0.7) var(--nH));
+  --canvas-2:   oklch(0.962 calc(var(--nC) * 0.8) var(--nH));
+  --surface:    oklch(0.998 calc(var(--nC) * 0.25) var(--nH));
+  --surface-2:  oklch(0.978 calc(var(--nC) * 0.7) var(--nH));
+  --surface-3:  oklch(0.958 calc(var(--nC) * 0.9) var(--nH));
+  --inset:      oklch(0.945 var(--nC) var(--nH));
+  --line:       oklch(0.916 var(--nC) var(--nH));
+  --line-2:     oklch(0.878 var(--nC) var(--nH));
+  --line-strong:oklch(0.80 var(--nC) var(--nH));
+  --text:       oklch(0.255 calc(var(--nC) * 1.4) var(--nH));
+  --text-2:     oklch(0.448 calc(var(--nC) * 1.2) var(--nH));
+  --text-3:     oklch(0.585 var(--nC) var(--nH));
+  --text-faint: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
+
+  --accent:      oklch(var(--aL) var(--aC) var(--aH));
+  --accent-hi:   oklch(calc(var(--aL) - 0.06) var(--aC) var(--aH));
+  --accent-weak: oklch(0.955 calc(var(--aC) * 0.45) var(--aH));
+  --accent-line: oklch(0.90 calc(var(--aC) * 0.55) var(--aH));
+  --focus:       oklch(var(--aL) var(--aC) var(--aH) / 0.45);
+
+  --rail:        oklch(0.205 calc(var(--nC) * 1.3) var(--nH)); /* sidebar / dark rail */
+  --rail-2:      oklch(0.255 calc(var(--nC) * 1.3) var(--nH));
+  --rail-line:   oklch(1 0 0 / 0.08);
+  --rail-text:   oklch(0.96 calc(var(--nC) * 0.4) var(--nH));
+  --rail-text-2: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
+  --rail-text-3: oklch(0.55 calc(var(--nC) * 0.8) var(--nH));
+
+  --shadow-sm: 0 1px 2px oklch(var(--nH) 0 0 / 0), 0 1px 2px oklch(0.2 0.02 var(--nH) / 0.06);
+  --shadow:    0 1px 3px oklch(0.2 0.02 var(--nH) / 0.07), 0 4px 16px oklch(0.2 0.02 var(--nH) / 0.06);
+  --shadow-lg: 0 8px 40px oklch(0.2 0.02 var(--nH) / 0.13), 0 2px 8px oklch(0.2 0.02 var(--nH) / 0.08);
+
+  /* — Radius (mixed shapes: sharp tables / rounded cards) — */
+  --r-card: 14px;
+  --r-ctrl: 8px;
+  --r-chip: 6px;
+  --r-table: 3px;
+  --r-pill: 999px;
+
+  /* — Density (default: cozy) — */
+  --row-h: 36px;
+  --pad: 16px;
+  --pad-tight: 10px;
+  --gap: 14px;
+  --fs-table: 12.5px;
+
+  /* — Typeface (default: grotesk) — */
+  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display-tracking: -0.02em;
+  --display-weight: 700;
+}
+
+/* ====================== TEMPERATURES ====================== */
+[data-temp="slate"] { --nH: 256; --nC: 0.010; }
+[data-temp="stone"] { --nH: 75;  --nC: 0.011; }
+[data-temp="gray"]  { --nH: 0;   --nC: 0.0;   }
+[data-temp="paper"] { --nH: 83;  --nC: 0.020; }
+
+/* ======================== ACCENTS ========================= */
+[data-accent="evergreen"] { --aL: 0.47; --aC: 0.094; --aH: 159; --on-accent: oklch(0.99 0.01 159); }
+[data-accent="ink"]       { --aL: 0.47; --aC: 0.150; --aH: 262; --on-accent: oklch(0.99 0.01 262); }
+[data-accent="teal"]      { --aL: 0.52; --aC: 0.090; --aH: 198; --on-accent: oklch(0.99 0.01 198); }
+[data-accent="amber"]     { --aL: 0.62; --aC: 0.130; --aH: 64;  --on-accent: oklch(0.20 0.03 64); }
+[data-accent="violet"]    { --aL: 0.50; --aC: 0.170; --aH: 292; --on-accent: oklch(0.99 0.01 292); }
+
+/* ======================= DARK MODE ======================== */
+[data-theme="dark"] {
+  --canvas:     oklch(0.165 calc(var(--nC) * 1.1) var(--nH));
+  --canvas-2:   oklch(0.135 calc(var(--nC) * 1.1) var(--nH));
+  --surface:    oklch(0.205 calc(var(--nC) * 1.2) var(--nH));
+  --surface-2:  oklch(0.232 calc(var(--nC) * 1.2) var(--nH));
+  --surface-3:  oklch(0.262 calc(var(--nC) * 1.2) var(--nH));
+  --inset:      oklch(0.185 calc(var(--nC) * 1.1) var(--nH));
+  --line:       oklch(1 0 0 / 0.085);
+  --line-2:     oklch(1 0 0 / 0.13);
+  --line-strong:oklch(1 0 0 / 0.22);
+  --text:       oklch(0.965 calc(var(--nC) * 0.5) var(--nH));
+  --text-2:     oklch(0.74 calc(var(--nC) * 0.9) var(--nH));
+  --text-3:     oklch(0.60 calc(var(--nC) * 0.9) var(--nH));
+  --text-faint: oklch(0.50 calc(var(--nC) * 0.8) var(--nH));
+
+  --accent:      oklch(calc(var(--aL) + 0.16) calc(var(--aC) * 0.95) var(--aH));
+  --accent-hi:   oklch(calc(var(--aL) + 0.24) calc(var(--aC) * 0.9) var(--aH));
+  --accent-weak: oklch(0.28 calc(var(--aC) * 0.5) var(--aH));
+  --accent-line: oklch(0.40 calc(var(--aC) * 0.6) var(--aH));
+  --focus:       oklch(calc(var(--aL) + 0.16) var(--aC) var(--aH) / 0.5);
+
+  --pos:        oklch(0.74 0.16 152);
+  --pos-weak:   oklch(0.30 0.06 152);
+  --neg:        oklch(0.70 0.17 25);
+  --neg-weak:   oklch(0.30 0.07 25);
+  --warn:       oklch(0.79 0.14 75);
+  --warn-weak:  oklch(0.32 0.06 75);
+  --info:       oklch(0.72 0.13 250);
+  --info-weak:  oklch(0.30 0.05 250);
+
+  --rail:        oklch(0.135 calc(var(--nC) * 1.1) var(--nH));
+  --rail-2:      oklch(0.195 calc(var(--nC) * 1.2) var(--nH));
+  --rail-line:   oklch(1 0 0 / 0.07);
+  --rail-text:   oklch(0.95 calc(var(--nC) * 0.4) var(--nH));
+  --rail-text-2: oklch(0.66 calc(var(--nC) * 0.8) var(--nH));
+  --rail-text-3: oklch(0.50 calc(var(--nC) * 0.8) var(--nH));
+
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow:    0 2px 8px oklch(0 0 0 / 0.5);
+  --shadow-lg: 0 12px 48px oklch(0 0 0 / 0.6);
+
+  --cat-1: oklch(0.70 0.13 250); --cat-2: oklch(0.72 0.13 152);
+  --cat-3: oklch(0.76 0.14 70);  --cat-4: oklch(0.68 0.16 25);
+  --cat-5: oklch(0.68 0.15 300); --cat-6: oklch(0.70 0.10 195);
+  --cat-7: oklch(0.74 0.13 110); --cat-8: oklch(0.68 0.11 330);
+}
+
+/* ======================= DENSITIES ======================== */
+[data-density="compact"] { --row-h: 28px; --pad: 12px; --pad-tight: 7px;  --gap: 10px; --fs-table: 12px; }
+[data-density="cozy"]    { --row-h: 36px; --pad: 16px; --pad-tight: 10px; --gap: 14px; --fs-table: 12.5px; }
+[data-density="comfy"]   { --row-h: 46px; --pad: 22px; --pad-tight: 14px; --gap: 18px; --fs-table: 13.5px; }
+
+/* ==================== TYPE PERSONALITIES ================== */
+[data-type="grotesk"] {
+  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display-tracking: -0.02em; --display-weight: 700;
+}
+[data-type="humanist"] {
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "IBM Plex Sans", system-ui, sans-serif;
+  --display-tracking: -0.015em; --display-weight: 600;
+}
+[data-type="editorial"] {
+  --font-ui: "Source Sans 3", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --display-tracking: -0.01em; --display-weight: 600;
+}
+[data-type="technical"] {
+  --font-ui: "JetBrains Mono", ui-monospace, monospace;
+  --font-num: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: -0.03em; --display-weight: 700;
+}
+
+/* ====================== PRIMITIVES ======================== */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; letter-spacing: -0.01em; }
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 99px; border: 3px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-strong); background-clip: padding-box; }
+
+::selection { background: var(--accent-weak); color: var(--text); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-radius: 2px; }
+
+/* Reusable surfaces */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==== App shell layout (from Finance Freedom App.html inline reset) ==== */
+html, body, #root { height: 100%; width: 100%; overflow: hidden; margin: 0; }
+body { background: var(--canvas); }
+#root { display: flex; }
+
+/* ==== Mobile companion view (from Finance Freedom Mobile.html inline reset) ====
+   The mobile showcase is a tall, scrollable page (two device frames), so it
+   needs the page to scroll rather than the desktop app's clipped flex shell. */
+html[data-view="mobile"], html[data-view="mobile"] body, html[data-view="mobile"] #root { overflow: visible; height: auto; }
+html[data-view="mobile"] #root { display: block; min-height: 100%; }
+
+/* Honor reduced-motion for the register row hover micro-interaction
+   (the transition is applied inline, so neutralize it here). */
+@media (prefers-reduced-motion: reduce) {
+  .ff-reg-row { transition: none !important; }
+}
