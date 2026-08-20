@@ -255,11 +255,15 @@ const { AppData, fmt, fmtN } = (function () {
   const budgets = deriveBudgetSpent(budgetsBase, transactions, TODAY);
 
   // ---- Upcoming bills ---- (daysUntil keyed off the real today)
+  // The bills that are ALSO cash-flow forecast events (Rent, Card→Sapphire,
+  // Auto) MUST use the same day offsets as buildForecast()'s `events` array
+  // (day 3 / 7 / 10) — otherwise "Upcoming · this cycle" shows a date one day
+  // off from the calendar and the Scheduled table, which read from the forecast.
   const billDate = (n) => { const d = daysFromToday(n); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   const upcomingBills = [
-    { id: 'u1', payee: 'Rent — Maple Apartments', cat: 'Housing', date: billDate(2), daysUntil: 2, amount: 2850.00, autopay: false },
-    { id: 'u2', payee: 'Sapphire Reserve', cat: 'Credit card', date: billDate(6), daysUntil: 6, amount: 640.00, autopay: false },
-    { id: 'u3', payee: 'Auto Loan', cat: 'Loan', date: billDate(9), daysUntil: 9, amount: 412.30, autopay: true },
+    { id: 'u1', payee: 'Rent — Maple Apartments', cat: 'Housing', date: billDate(3), daysUntil: 3, amount: 2850.00, autopay: false },
+    { id: 'u2', payee: 'Sapphire Reserve', cat: 'Credit card', date: billDate(7), daysUntil: 7, amount: 640.00, autopay: false },
+    { id: 'u3', payee: 'Auto Loan', cat: 'Loan', date: billDate(10), daysUntil: 10, amount: 412.30, autopay: true },
     { id: 'u4', payee: 'Comcast', cat: 'Utilities', date: billDate(15), daysUntil: 15, amount: 89.99, autopay: true },
     { id: 'u5', payee: 'Equinox', cat: 'Health', date: billDate(20), daysUntil: 20, amount: 215.00, autopay: true },
   ];
