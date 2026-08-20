@@ -287,8 +287,10 @@ export function CashFlowChart({ height = 300, compact = false, days = 60 }) {
     <div ref={ref} style={{ width: '100%', position: 'relative' }}>
       <svg width={w} height={height} style={{ display: 'block' }} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
         <defs>
+          {/* Reversed: dense at the baseline (low amounts — more certain),
+              fading up toward the projected line (higher amounts — less certain). */}
           <linearGradient id="cfArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" /><stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0" /><stop offset="100%" stopColor="var(--accent)" stopOpacity="0.18" />
           </linearGradient>
         </defs>
         {gridYs.map((v, i) => <g key={i}>
