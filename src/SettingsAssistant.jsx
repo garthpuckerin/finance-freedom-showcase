@@ -1,6 +1,8 @@
 /* Finance Freedom — Assistant */
 import React from 'react';
 import { AppData, fmt, fmtN } from './data.js';
+import { fmtMonthDay } from './dates.js';
+import { simulate } from './Plan.jsx';
 const { useState: useSaS, useRef: useSaR, useEffect: useSaE } = React;
 
 /* ============ ASSISTANT ============ */
@@ -11,18 +13,28 @@ function answer(q) {
   const income = month.filter(x => x.amount > 0).reduce((s, x) => s + x.amount, 0);
   const expense = month.filter(x => x.amount < 0).reduce((s, x) => s + Math.abs(x.amount), 0);
 
-  if (/(net worth|worth)/.test(t)) return { text: `Your net worth is **${fmt(D.netWorth, { maximumFractionDigits: 0 })}** — up about $14,820 over the trailing 12 months. Assets total ${fmt(D.accounts.filter(a => a.balance > 0).reduce((s, a) => s + a.balance, 0), { maximumFractionDigits: 0 })} against ${fmt(Math.abs(D.accounts.filter(a => a.balance < 0).reduce((s, a) => s + a.balance, 0)), { maximumFractionDigits: 0 })} in debts.`, chips: ['Show net worth trend', 'What are my debts?'] };
+  if (/(net worth|worth)/.test(t)) return { text: `Your net worth is **${fmt(D.netWorth, { maximumFractionDigits: 0 })}** — up about ${fmt(D.netWorthDelta12mo, { maximumFractionDigits: 0 })} over the trailing 12 months. Assets total ${fmt(D.accounts.filter(a => a.balance > 0).reduce((s, a) => s + a.balance, 0), { maximumFractionDigits: 0 })} against ${fmt(Math.abs(D.accounts.filter(a => a.balance < 0).reduce((s, a) => s + a.balance, 0)), { maximumFractionDigits: 0 })} in debts.`, chips: ['Show net worth trend', 'What are my debts?'] };
   if (/(subscription|recurring)/.test(t)) { const tot = D.subscriptions.reduce((s, x) => s + x.amount, 0); const un = D.subscriptions.filter(s => s.status === 'unused'); return { text: `I found **${D.subscriptions.length} recurring subscriptions** totaling **$${fmtN(tot)}/mo**. ${un.length} look unused — ${un.map(u => u.name).join(' and ')} — cancelling them would save about $${(un.reduce((s, u) => s + u.amount, 0) * 12).toFixed(0)} a year.`, chips: ['Cancel unused subs', 'Biggest expense?'] }; }
   for (const cat of ['food', 'housing', 'transport', 'shopping', 'utilities', 'health', 'entertainment']) {
     if (t.includes(cat)) { const c = D.spendingByCategory.find(x => x.category.toLowerCase() === cat); if (c) return { text: `You've spent **$${fmtN(c.amount)}** on **${c.category}** this month — that's ${c.pct}% of your spending. ${c.amount > 600 ? 'It\'s one of your larger categories.' : 'That\'s on the lighter side.'}`, chips: ['Spending by category', 'Am I over budget?'] }; }
   }
   if (/(biggest|largest|top).*(expense|spend|cost)/.test(t) || /where.*money/.test(t)) { const top = D.spendingByCategory[0]; return { text: `Your biggest expense this month is **${top.category}** at **$${fmtN(top.amount)}** (${top.pct}%), driven mostly by rent. Food is next at $${fmtN(D.spendingByCategory[1].amount)}.`, chips: ['Spending by category', 'How can I save more?'] }; }
   if (/(save|saving|savings rate)/.test(t)) { const rate = (((income - expense) / income) * 100).toFixed(1); return { text: `Your savings rate this month is **${rate}%** — income of ${fmt(income, { maximumFractionDigits: 0 })} against ${fmt(expense, { maximumFractionDigits: 0 })} in spending. Cancelling 2 unused subscriptions and trimming dining would push you past your 15% goal.`, chips: ['What\'s over budget?', 'When am I debt-free?'] }; }
-  if (/(debt|payoff|owe)/.test(t)) { const tot = D.debts.reduce((s, d) => s + d.balance, 0); return { text: `You carry **${fmt(tot, { maximumFractionDigits: 0 })}** across ${D.debts.length} accounts. Using the avalanche method with $300 extra a month, you'd be debt-free by mid-2028 and save hundreds in interest — the 22% Sapphire Reserve is the one to attack first.`, chips: ['Open Debt Payoff', 'Net worth?'] }; }
+  if (/(debt|payoff|owe)/.test(t)) {
+    const tot = D.debts.reduce((s, d) => s + d.balance, 0);
+    const minSum = D.debts.reduce((s, d) => s + d.min, 0);
+    const plan = simulate(D.debts, minSum + 300, 'avalanche');
+    const base = simulate(D.debts, minSum, 'avalanche');
+    const saved = base.totalInterest - plan.totalInterest;
+    const freeDate = new Date(D.labels.today); freeDate.setDate(1); freeDate.setMonth(freeDate.getMonth() + plan.months);
+    const freeBy = freeDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const top = D.debts.slice().sort((a, b) => b.apr - a.apr)[0];
+    return { text: `You carry **${fmt(tot, { maximumFractionDigits: 0 })}** across ${D.debts.length} accounts. Using the avalanche method with $300 extra a month, you'd be debt-free by **${freeBy}** and save about ${fmt(saved, { maximumFractionDigits: 0 })} in interest — the ${top.apr.toFixed(2)}% ${top.name} is the one to attack first.`, chips: ['Open Debt Payoff', 'Net worth?'] };
+  }
   if (/(budget|over)/.test(t)) { const over = D.budgets.filter(b => b.spent > b.budgeted); return { text: `You're over budget in **${over.length} envelopes**: ${over.map(b => b.category).join(', ')}. Dining is $${(D.budgets[1].spent - D.budgets[1].budgeted).toFixed(0)} over and Transport is $${(D.budgets[2].spent - D.budgets[2].budgeted).toFixed(0)} over with a few days left in ${D.labels.monthName}.`, chips: ['Spending by category', 'How can I save more?'] }; }
   if (/(income|earn|make|salary)/.test(t)) return { text: `Your income this month is **${fmt(income, { maximumFractionDigits: 0 })}**, from two payroll deposits plus a little interest. Your trailing average is about $9,180/mo.`, chips: ['Savings rate?', 'Net worth?'] };
-  if (/(afford|can i)/.test(t)) return { text: `Based on your 60-day forecast, checking dips to **$420** on ${D.labels.projectedLowDay} before payday — so a large purchase before then would breach your safety floor. A couple of days later you'd have room. Want me to model a specific amount?`, chips: ['Show cash flow', 'Savings rate?'] };
-  if (/(invest|portfolio|stock)/.test(t)) { const mv = D.holdings.reduce((s, h) => s + h.shares * h.price, 0); return { text: `Your portfolio is worth **${fmt(mv, { maximumFractionDigits: 0 })}** across 6 holdings. One note: $4,820 sits idle in settlement cash — investing it could add roughly $340/yr.`, chips: ['Open Investments', 'Net worth?'] }; }
+  if (/(afford|can i)/.test(t)) return { text: `Based on your 60-day forecast, checking dips to **${fmt(D.forecast.lowBal)}** on ${fmtMonthDay(D.forecast.lowDate)} before payday — so a large purchase before then would breach your safety floor. A couple of days later you'd have room. Want me to model a specific amount?`, chips: ['Show cash flow', 'Savings rate?'] };
+  if (/(invest|portfolio|stock)/.test(t)) { const mv = D.holdings.reduce((s, h) => s + h.shares * h.price, 0); return { text: `Your portfolio is worth **${fmt(mv, { maximumFractionDigits: 0 })}** across 6 holdings. One note: ${fmt(D.cashDrag.mv, { maximumFractionDigits: 0 })} sits idle in settlement cash — investing it could add roughly ${fmt(D.cashDrag.yield, { maximumFractionDigits: 0 })}/yr.`, chips: ['Open Investments', 'Net worth?'] }; }
   return { text: `I can answer questions about your spending, budgets, net worth, debts, subscriptions and cash flow — all grounded in your real register. Try one of these:`, chips: ['What\'s my net worth?', 'Biggest expense this month?', 'Find unused subscriptions', 'When am I debt-free?'] };
 }
 

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { AppData, fmt, fmtN } from './data.js';
 import { IOSDevice } from './ios-frame.jsx';
 import { LineTrend, Donut } from './charts.jsx';
+import { AssistantScreen } from './SettingsAssistant.jsx';
 
 const SB_TOP = 56; // clearance for status bar + dynamic island
 
@@ -227,7 +228,7 @@ function MbMore({ onOpen }) {
   const items = [
     ['◬', 'Investments', fmt(investTotal, { maximumFractionDigits: 0 }), 'invest'], ['◈', 'Net Worth', fmt(D.netWorth, { maximumFractionDigits: 0 }), 'networth'], ['◷', 'Bills & Deposits', `${D.upcomingBills.length} upcoming`, 'bills'],
     ['◎', 'Goals', null, null], ['⊖', 'Debt Payoff', fmt(debtTotal, { maximumFractionDigits: 0 }), 'debt'], ['◉', 'Insights', `${D.insights.length} new`, 'insights'],
-    ['⊞', 'Tax', AppData.labels.year, null], ['⚙', 'Settings', null, null], ['✦', 'Assistant', null, null],
+    ['⊞', 'Tax', AppData.labels.year, null], ['⚙', 'Settings', null, null], ['✦', 'Assistant', null, 'assistant'],
   ];
   return (
     <div style={{ padding: '14px 16px 96px' }}>
@@ -409,7 +410,7 @@ function MobileScreen({ tab, setTab }) {
   const greetHour = new Date().getHours();
   const mbGreet = greetHour < 12 ? 'Good morning' : greetHour < 18 ? 'Good afternoon' : 'Good evening';
   const titles = { home: [AppData.labels.todayLongNoYear, `${mbGreet}, ${AppData.user.name}`], spend: [AppData.period.shortLabel, 'Spending'], tx: ['Everyday Checking', 'Activity'], more: [null, 'More'] };
-  const detailTitles = { invest: ['Brokerage + 401(k)', 'Investments'], networth: ['trailing 12 months', 'Net Worth'], bills: ['next 60 days', 'Bills & Deposits'], debt: ['2 accounts', 'Debt Payoff'], insights: ['this week', 'Insights'] };
+  const detailTitles = { invest: ['Brokerage + 401(k)', 'Investments'], networth: ['trailing 12 months', 'Net Worth'], bills: ['next 60 days', 'Bills & Deposits'], debt: ['2 accounts', 'Debt Payoff'], insights: ['this week', 'Insights'], assistant: ['grounded in your register', 'Assistant'] };
   const isPoc = detail && detail.startsWith('poc:');
   const [sub, title] = detail
     ? (isPoc ? ['desktop-first', detail.slice(4)] : detailTitles[detail])
@@ -430,12 +431,24 @@ function MobileScreen({ tab, setTab }) {
   else if (detail === 'debt') body = <MbDebt />;
   else if (detail === 'insights') body = <MbInsights />;
 
+  // The Assistant is a full-height chat: it manages its own scroll and pins its
+  // input above the tab bar, so it sits OUTSIDE the normal scroll wrapper (a
+  // flex:1 child needs a bounded-height flex parent to lay out correctly).
+  const isChat = detail === 'assistant';
+
   return (
     <div style={{ position: 'absolute', inset: 0, background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-        <MbHeader sub={sub} title={title} onBack={detail ? closeDetail : null} right={!detail && tab === 'home' ? <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)' }}>{userInitials}</div> : null} />
-        {body}
-      </div>
+      {isChat ? (
+        <>
+          <MbHeader sub={sub} title={title} onBack={closeDetail} />
+          <AssistantScreen />
+        </>
+      ) : (
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+          <MbHeader sub={sub} title={title} onBack={detail ? closeDetail : null} right={!detail && tab === 'home' ? <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)' }}>{userInitials}</div> : null} />
+          {body}
+        </div>
+      )}
       <MbTabBar tab={tab} setTab={switchTab} />
     </div>
   );

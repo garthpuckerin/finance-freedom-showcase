@@ -8,8 +8,9 @@ const { useState: usePlS, useMemo: usePlM } = React;
 const TH3 = (extra) => Object.assign({ textAlign: 'left', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-faint)', fontWeight: 600, padding: '9px 14px', background: 'var(--surface-3)', borderBottom: '1px solid var(--line-2)' }, extra);
 const TD3 = (extra) => Object.assign({ padding: '0 14px', height: 'var(--row-h)', borderBottom: '1px solid var(--line)', color: 'var(--text)', fontSize: 'var(--fs-table)', verticalAlign: 'middle' }, extra);
 
-/* ---- amortization simulator ---- */
-function simulate(debts, monthlyBudget, strategy) {
+/* ---- amortization simulator (shared with the Assistant so its payoff date
+   matches this screen exactly) ---- */
+export function simulate(debts, monthlyBudget, strategy) {
   let bal = debts.map(d => ({ ...d }));
   let totalInterest = 0, months = 0;
   const minSum = bal.reduce((s, d) => s + d.min, 0);

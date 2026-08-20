@@ -419,6 +419,7 @@ const { AppData, fmt, fmtN } = (function () {
   const cashMv = cashHolding ? cashHolding.shares * cashHolding.price : 0;
   const cashDragPct = (cashMv / portfolioMv) * 100;
   const cashYield = cashMv * 0.071;                     // ~7.1% recent equity return on the idle cash
+  AppData.cashDrag = { mv: cashMv, pct: cashDragPct, yield: cashYield }; // single source for the Insights card AND the Assistant
   // Dining vs budget — read the derived envelope.
   const diningBudget = budgets.find(b => b.id === 'b2') || { spent: 0, budgeted: 0 };
   const transportBudget = budgets.find(b => b.id === 'b3') || { spent: 0, budgeted: 0 };
