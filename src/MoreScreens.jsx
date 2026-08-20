@@ -86,10 +86,9 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function BillsCalendar({ events }) {
   const today = new Date(AppData.labels.today);
-  // Default the calendar to next month, where most upcoming bills land — mirrors
-  // the original "June while today is late May" framing, now today-relative.
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  const HOME_VIEW = { y: nextMonth.getFullYear(), m: nextMonth.getMonth() };
+  // Open on the CURRENT month so today and the imminent bills are in view —
+  // the near-term due dates cluster in the next couple of weeks, not next month.
+  const HOME_VIEW = { y: today.getFullYear(), m: today.getMonth() };
   const [view, setView] = useMoreS(HOME_VIEW);
   const [sel, setSel] = useMoreS(null);
 

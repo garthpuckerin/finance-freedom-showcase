@@ -4,7 +4,7 @@ import { AppData, fmt, fmtN } from './data.js';
 import { Stat, Card, Segmented, Badge } from './ui.jsx';
 import { GaugeBar } from './charts.jsx';
 import { Modal } from './Overlays.jsx';
-import { StyleChips, StyleLens, useBudgetStyle } from './BudgetStyles.jsx';
+import { StyleChips, StyleLens, useBudgetStyle, deriveStyleMetrics } from './BudgetStyles.jsx';
 const { useState: useDpS, useMemo: useDpM } = React;
 
 const DTH = (extra) => Object.assign({ textAlign: 'left', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-faint)', fontWeight: 600, padding: '9px 14px', background: 'var(--surface-3)', borderBottom: '1px solid var(--line-2)' }, extra);
@@ -185,10 +185,13 @@ export function BudgetsScreen() {
 
   const totBudget = rows.reduce((s, b) => s + b.budgeted, 0);
   const totSpent = rows.reduce((s, b) => s + b.spent, 0);
-  // Monthly income for the "unbudgeted income" calc — derived from biweekly
-  // payroll in the ledger (2 cheques/mo) so it reflects the canonical data.
-  const income = Math.round(4750 * 26 / 12);
-  const surplus = income - totBudget;
+  // "Left to assign" nets ALL commitments — envelopes + housing (rent) +
+  // savings transfers — against income, so it can't contradict the zero-based /
+  // FIRE lenses (which account the same way). income-minus-envelopes alone
+  // overstated free cash by ignoring the two biggest outflows (rent + savings).
+  const m = deriveStyleMetrics(rows);
+  const income = m.income;
+  const surplus = income - (m.totBudget + m.rent + m.savings);
   const remaining = totBudget - totSpent;
 
   function setAmt(id, v) { setRows(rs => rs.map(b => b.id === id ? { ...b, budgeted: Math.max(0, Math.round(v)) } : b)); }
@@ -206,13 +209,13 @@ export function BudgetsScreen() {
           <Stat k={`Budgeted · ${D.period.shortLabel}`} v={fmt(totBudget, { maximumFractionDigits: 0 })} d={`across ${rows.length} envelopes`} />
           <Stat k="Spent so far" v={fmt(totSpent, { maximumFractionDigits: 0 })} d={`${Math.round(totSpent / totBudget * 100)}% of plan`} dColor="var(--text-3)" />
           <Stat k="Remaining" v={fmt(remaining, { maximumFractionDigits: 0 })} d="in this period" dColor={remaining < 0 ? 'var(--neg)' : 'var(--pos)'} />
-          <Stat k="Unbudgeted Income" v={fmt(surplus, { maximumFractionDigits: 0 })} d={surplus >= 0 ? 'available to assign' : 'over-allocated'} dColor={surplus >= 0 ? 'var(--accent)' : 'var(--neg)'} />
+          <Stat k="Left to Assign" v={fmt(surplus, { maximumFractionDigits: 0 })} d={surplus >= 0 ? 'after housing & savings' : 'over-allocated — trim an envelope'} dColor={surplus >= 0 ? 'var(--accent)' : 'var(--neg)'} />
         </div>
 
         {surplus > 0 && (
           <div className="card" style={{ padding: '12px 16px', marginBottom: 'var(--gap)', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--accent-weak)', borderColor: 'var(--accent-line)' }}>
             <span style={{ color: 'var(--accent)', fontSize: 16 }}>✦</span>
-            <span style={{ flex: 1, fontSize: 13, color: 'var(--text-2)' }}>You have <b className="num" style={{ color: 'var(--text)' }}>${fmtN(surplus)}</b> of unbudgeted income this month. Click <b>Fund +$50</b> on any envelope to assign it.</span>
+            <span style={{ flex: 1, fontSize: 13, color: 'var(--text-2)' }}>You have <b className="num" style={{ color: 'var(--text)' }}>${fmtN(surplus)}</b> left to assign after housing & savings. Click <b>Fund +$50</b> on any envelope to put it to work.</span>
           </div>
         )}
 
