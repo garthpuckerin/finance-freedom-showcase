@@ -256,7 +256,11 @@ export function CashFlowChart({ height = 300, compact = false, days = 60 }) {
   const fcLine = [lastActual, ...forecast];
 
   const toPts = (arr) => arr.map(p => `${x(p.t)},${y(p.bal)}`).join(' ');
+  // Past (actual): solid fill = permanence. Future (forecast): gradient fill =
+  // projection. (MS Money's actual-vs-projected visual language.)
   const areaActual = `${toPts(actual)} ${x(lastActual.t)},${y(minB)} ${x(actual[0].t)},${y(minB)}`;
+  const lastFc = fcLine[fcLine.length - 1];
+  const areaForecast = `${toPts(fcLine)} ${x(lastFc.t)},${y(minB)} ${x(fcLine[0].t)},${y(minB)}`;
 
   // danger segments: where forecast bal < floor
   const dangerSegs = [];
@@ -294,10 +298,12 @@ export function CashFlowChart({ height = 300, compact = false, days = 60 }) {
         {/* floor */}
         <line x1={padL} y1={y(floor)} x2={w - padR} y2={y(floor)} stroke="var(--neg)" strokeWidth="1" strokeDasharray="2 4" opacity="0.7" />
         <text x={padL + 4} y={y(floor) - 5} fontSize="8.5" fontFamily="var(--font-num)" fill="var(--neg)">SAFETY FLOOR · ${floor.toLocaleString()}</text>
-        {/* actual area + line */}
-        <polygon points={areaActual} fill="url(#cfArea)" />
+        {/* future (forecast) — fading gradient = projection */}
+        <polygon points={areaForecast} fill="url(#cfArea)" />
+        {/* past (actual) — solid fill at the gradient's peak density = permanence */}
+        <polygon points={areaActual} fill="var(--accent)" fillOpacity="0.18" />
         <polyline points={toPts(actual)} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {/* forecast dashed */}
+        {/* forecast dashed line */}
         <polyline points={toPts(fcLine)} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="5 5" strokeLinejoin="round" strokeLinecap="round" opacity="0.85" />
         {/* danger overlay */}
         {dangerSegs.map((s, i) => <polyline key={i} points={s} fill="none" stroke="var(--neg)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />)}
