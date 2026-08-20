@@ -141,8 +141,8 @@ function BillsCalendar({ events }) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {evs.slice(0, 3).map((e, j) => (
-                  <div key={j} title={`${evName(e.label)} · ${e.pos ? '+' : '−'}$${fmtN(e.amt)}`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 5px', borderRadius: 4, background: e.pos ? 'var(--pos-weak)' : 'var(--neg-weak)', borderLeft: `2px solid ${e.pos ? 'var(--pos)' : 'var(--neg)'}` }}>
-                    <span style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{evName(e.label)}</span>
+                  <div key={j} title={`${(e.payee || evName(e.label))} · ${e.pos ? '+' : '−'}$${fmtN(e.amt)}`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 5px', borderRadius: 4, background: e.pos ? 'var(--pos-weak)' : 'var(--neg-weak)', borderLeft: `2px solid ${e.pos ? 'var(--pos)' : 'var(--neg)'}` }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(e.payee || evName(e.label))}</span>
                     <span className="num" style={{ fontSize: 9.5, fontWeight: 600, color: e.pos ? 'var(--pos)' : 'var(--neg)' }}>{e.pos ? '+' : '−'}{Math.abs(e.amt) >= 1000 ? (Math.abs(e.amt) / 1000).toFixed(1) + 'k' : Math.round(Math.abs(e.amt))}</span>
                   </div>
                 ))}
@@ -158,7 +158,7 @@ function BillsCalendar({ events }) {
           {selEvents.map((e, j) => (
             <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '5px 0' }}>
               <span style={{ width: 8, height: 8, borderRadius: 2, background: e.pos ? 'var(--pos)' : 'var(--neg)', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: 12.5, fontWeight: 500, color: 'var(--text)' }}>{evName(e.label)}</span>
+              <span style={{ flex: 1, fontSize: 12.5, fontWeight: 500, color: 'var(--text)' }}>{(e.payee || evName(e.label))}</span>
               {e.pos ? <Badge tone="pos">Deposit</Badge> : <Badge tone="neutral">Bill</Badge>}
               <span className="num" style={{ fontSize: 13, fontWeight: 600, color: e.pos ? 'var(--pos)' : 'var(--neg)', minWidth: 80, textAlign: 'right' }}>{e.pos ? '+' : '−'}${fmtN(e.amt)}</span>
             </div>
@@ -178,7 +178,7 @@ export function BillsScreen() {
   // "All scheduled" table below stays future-only (it IS a forward schedule).
   // transactions carry `date` as a local ISO string ('YYYY-MM-DD'); parse to a
   // LOCAL midnight Date (the 'T00:00:00' keeps it from shifting a day via UTC).
-  const pastCalEvents = D.transactions.map((t) => ({ date: new Date(t.date + 'T00:00:00'), label: t.payee, amt: t.amount, pos: t.amount > 0 }));
+  const pastCalEvents = D.transactions.map((t) => ({ date: new Date(t.date + 'T00:00:00'), label: t.payee, payee: t.payee, amt: t.amount, pos: t.amount > 0 }));
   const calendarEvents = [...pastCalEvents, ...events];
   // KPIs DERIVED from the upcoming-bills list + forecast so they can't drift.
   const due7 = D.upcomingBills.filter(b => b.daysUntil <= 7);
@@ -223,7 +223,7 @@ export function BillsScreen() {
                 {events.map((e, i) => (
                   <tr key={e.id} style={{ background: i % 2 ? 'var(--surface-2)' : 'transparent' }}>
                     <td className="num" style={TD({ color: 'var(--text-3)' })}>{e.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
-                    <td style={TD({ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>{e.label === 'Payday' ? 'Employer Payroll' : e.label === 'Net' ? 'Transfer → Brokerage' : e.label === 'Card' ? 'Sapphire Reserve' : e.label === 'Auto' ? 'Auto Loan' : e.label === 'Utils' ? 'Utilities' : e.label}</td>
+                    <td style={TD({ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>{e.payee || e.label}</td>
                     <td style={TD()}>{e.pos ? <Badge tone="pos">Deposit</Badge> : <Badge tone="neutral">Bill</Badge>}</td>
                     <td className="num" style={TD({ textAlign: 'right', fontWeight: 600, color: e.pos ? 'var(--pos)' : 'var(--neg)' })}>{e.pos ? '+' : '−'}${fmtN(e.amt)}</td>
                   </tr>

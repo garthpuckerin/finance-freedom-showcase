@@ -254,19 +254,10 @@ const { AppData, fmt, fmtN } = (function () {
   ];
   const budgets = deriveBudgetSpent(budgetsBase, transactions, TODAY);
 
-  // ---- Upcoming bills ---- (daysUntil keyed off the real today)
-  // The bills that are ALSO cash-flow forecast events (Rent, Card→Sapphire,
-  // Auto) MUST use the same day offsets as buildForecast()'s `events` array
-  // (day 3 / 7 / 10) — otherwise "Upcoming · this cycle" shows a date one day
-  // off from the calendar and the Scheduled table, which read from the forecast.
-  const billDate = (n) => { const d = daysFromToday(n); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
-  const upcomingBills = [
-    { id: 'u1', payee: 'Rent — Maple Apartments', cat: 'Housing', date: billDate(3), daysUntil: 3, amount: 2850.00, autopay: false },
-    { id: 'u2', payee: 'Sapphire Reserve', cat: 'Credit card', date: billDate(7), daysUntil: 7, amount: 640.00, autopay: false },
-    { id: 'u3', payee: 'Auto Loan', cat: 'Loan', date: billDate(10), daysUntil: 10, amount: 412.30, autopay: true },
-    { id: 'u4', payee: 'Comcast', cat: 'Utilities', date: billDate(15), daysUntil: 15, amount: 89.99, autopay: true },
-    { id: 'u5', payee: 'Equinox', cat: 'Health', date: billDate(20), daysUntil: 20, amount: 215.00, autopay: true },
-  ];
+  // ---- Upcoming bills ----
+  // DERIVED from the forecast schedule (see `upcomingBills` defined right after
+  // buildForecast) so the "Upcoming · this cycle" list, the Dashboard card, the
+  // calendar, and the Scheduled table all read the same events and can't drift.
 
   // ---- Cash-flow forecast series ----
   // daily points: 30 days past (actual) + 60 days forecast, from the real today.
@@ -289,17 +280,27 @@ const { AppData, fmt, fmtN } = (function () {
     // not a synthetic walk, so every withdrawal/deposit shown in the register
     // appears as the matching dip/step in the chart's history line.
     const pts = deriveActualBalanceSeries(asc, 30, today);
-    // forecast events over 60 days
+    // The COMPLETE upcoming schedule over 60 days — every recurring bill/deposit
+    // that moves cash, not just the big ones. The old generic "Utils −232.87" is
+    // split into the real Comcast internet + PG&E electric, and the streaming/gym
+    // debits the model used to ignore are included, so the forecast (and every
+    // KPI, the calendar, table, and Upcoming list derived from it) accounts for
+    // ALL upcoming bills. payee/cat/autopay ride along as the single source.
     const events = [
-      { day: 3, label: 'Rent', amt: -2850 },
-      { day: 7, label: 'Card', amt: -640 },
-      { day: 10, label: 'Auto', amt: -412.30 },
-      { day: 16, label: 'Payday', amt: 4750, pos: true },
-      { day: 16, label: 'Net', amt: -1500 }, // transfer
-      { day: 20, label: 'Utils', amt: -232.87 },
-      { day: 31, label: 'Payday', amt: 4750, pos: true },
-      { day: 34, label: 'Rent', amt: -2850 },
-      { day: 46, label: 'Payday', amt: 4750, pos: true },
+      { day: 3,  label: 'Rent',     payee: 'Rent — Maple Apartments', cat: 'Housing',       amt: -2850,   autopay: false },
+      { day: 5,  label: 'iCloud',   payee: 'iCloud+ 2TB',             cat: 'Utilities',     amt: -9.99,   autopay: true },
+      { day: 7,  label: 'Card',     payee: 'Sapphire Reserve',        cat: 'Credit card',   amt: -640,    autopay: false },
+      { day: 10, label: 'Auto',     payee: 'Auto Loan',               cat: 'Loan',          amt: -412.30, autopay: true },
+      { day: 12, label: 'Spotify',  payee: 'Spotify',                 cat: 'Entertainment', amt: -11.99,  autopay: true },
+      { day: 15, label: 'Comcast',  payee: 'Comcast',                 cat: 'Utilities',     amt: -89.99,  autopay: true },
+      { day: 16, label: 'Payday',   payee: 'Employer Payroll',        cat: 'Income',        amt: 4750,    pos: true },
+      { day: 16, label: 'Net',      payee: 'Transfer → Brokerage',    cat: 'Transfer',      amt: -1500 },
+      { day: 18, label: 'Electric', payee: 'Pacific Gas & Electric',  cat: 'Utilities',     amt: -142.88, autopay: true },
+      { day: 20, label: 'Equinox',  payee: 'Equinox',                 cat: 'Health',        amt: -215,    autopay: true },
+      { day: 25, label: 'Netflix',  payee: 'Netflix',                 cat: 'Entertainment', amt: -22.99,  autopay: true },
+      { day: 31, label: 'Payday',   payee: 'Employer Payroll',        cat: 'Income',        amt: 4750,    pos: true },
+      { day: 34, label: 'Rent',     payee: 'Rent — Maple Apartments', cat: 'Housing',       amt: -2850,   autopay: false },
+      { day: 46, label: 'Payday',   payee: 'Employer Payroll',        cat: 'Income',        amt: 4750,    pos: true },
     ];
     let fb = FORECAST_START_BAL;
     const eventMarks = [];
@@ -317,8 +318,8 @@ const { AppData, fmt, fmtN } = (function () {
       // still cannot disagree.
       dayEvents.forEach(e => {
         fb += e.amt;
-        eventMarks.push({ t: i, date: d, label: e.label, amt: e.amt, pos: e.pos });
-        eventRows.push({ t: i, date: d, label: e.label, amt: e.amt, pos: e.pos, balance: fb });
+        eventMarks.push({ t: i, date: d, label: e.label, payee: e.payee, cat: e.cat, amt: e.amt, pos: e.pos, autopay: e.autopay });
+        eventRows.push({ t: i, date: d, label: e.label, payee: e.payee, cat: e.cat, amt: e.amt, pos: e.pos, autopay: e.autopay, balance: fb });
       });
       pts.push({ t: i, date: d, bal: fb, actual: false });
     }
@@ -337,12 +338,21 @@ const { AppData, fmt, fmtN } = (function () {
     };
   }
 
+  const forecast = buildForecast();
+  // "Upcoming · this cycle" + the Dashboard "Upcoming Bills" card DERIVE from the
+  // forecast schedule: the near-term outflows (not the brokerage transfer),
+  // within the ~3-week cycle. One source → the list, the calendar, and the
+  // Scheduled table can never disagree.
+  const upcomingBills = forecast.eventMarks
+    .filter((e) => !e.pos && e.cat !== 'Transfer' && e.t <= 20)
+    .map((e) => ({ id: 'ub-' + e.t + '-' + e.label, payee: e.payee, cat: e.cat, daysUntil: e.t, date: iso(e.date).slice(5), amount: Math.abs(e.amt), autopay: !!e.autopay }));
+
   const AppData = {
     user: { name: 'Demo User', household: 'Demo Household' },
     currentMonth: fmtYearMonth(TODAY),
     period, totals, prior,
     accounts, netWorth, transactions, accountLedgers, spendingByCategory, monthlyTrend,
-    budgets, upcomingBills, forecast: buildForecast(), catColor,
+    budgets, upcomingBills, forecast, catColor,
     // Derived, today-relative display labels shared across screens.
     labels: {
       today: TODAY,
