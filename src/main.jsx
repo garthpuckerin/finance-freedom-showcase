@@ -24,10 +24,15 @@ const isSmallScreen = viewParam !== 'desktop' && !isMobile &&
 // entry points. On first visit (either route) we show the Landing pitch; once
 // the visitor clicks "Launch demo" we persist the flag so reloads land back in
 // the app. Sign-out (in the app) clears the flag and returns here.
+//
+// SESSION-scoped (sessionStorage), not indefinite: a fresh visit always gets the
+// pitch, while in-session reloads/navigation stay in the app. This is a public
+// marketing demo — every new visitor (and every new tab) should see the landing,
+// not silently skip it because they entered once weeks ago.
 const ENTERED_KEY = 'ff:entered:v1';
 
 const readEntered = () => {
-  try { return localStorage.getItem(ENTERED_KEY) === 'true'; }
+  try { return sessionStorage.getItem(ENTERED_KEY) === 'true'; }
   catch { return false; }
 };
 
@@ -48,7 +53,7 @@ function Root() {
 
   // Enter the demo — persist so reloads stay in. Sign-out lives in the apps.
   const enterDemo = React.useCallback(() => {
-    try { localStorage.setItem(ENTERED_KEY, 'true'); } catch (e) {}
+    try { sessionStorage.setItem(ENTERED_KEY, 'true'); } catch (e) {}
     setEntered(true);
   }, []);
 
@@ -57,7 +62,7 @@ function Root() {
   // threading a prop through every screen.
   React.useEffect(() => {
     window.__ffSignOut = () => {
-      try { localStorage.removeItem(ENTERED_KEY); localStorage.removeItem('ff_onboarded_v1'); } catch (e) {}
+      try { sessionStorage.removeItem(ENTERED_KEY); localStorage.removeItem('ff_onboarded_v1'); } catch (e) {}
       setEntered(false);
     };
     return () => { delete window.__ffSignOut; };
