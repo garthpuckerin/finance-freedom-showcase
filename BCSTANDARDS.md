@@ -55,11 +55,9 @@
 
 ## Publish / spoiler discipline (reveal-season)
 
-- Finance Freedom was **revealed on the site 2026-08-20**; the name is public.
-  The **showcase repo's flip to public** remains an **open owner decision** (the
-  repo is still private) — owner-only action when decided:
-  `gh repo edit garthpuckerin/finance-freedom-showcase --visibility public
-  --accept-visibility-change-consequences`.
+- Finance Freedom was **revealed on the site 2026-08-20**; the repo was
+  **flipped public on 2026-08-22** (owner directive). Everything committed here
+  is public — the sanitized-only rule below is now live, not precautionary.
 - **noindex is kept**: the deployed demo carries
   `<meta name="robots" content="noindex">`; SEO/GEO lives on the hub
   (`garthpuckerin.com`), which links to this demo. Do not remove the noindex tag.
