@@ -170,8 +170,8 @@ export function Sidebar({ screen, acctDrawerOpen, onNav, onToggleAccounts }) {
         <div style={{ fontSize: 9.5, color: 'var(--rail-text-3)', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700 }}>Net Worth</div>
         <div className="num" style={{ fontSize: 19, fontWeight: 700, color: 'var(--rail-text)', marginTop: 3, letterSpacing: '-0.02em' }}>{fmt(netWorth, { maximumFractionDigits: 0 })}</div>
         <div style={{ display: 'flex', gap: 16, marginTop: 7 }}>
-          <div><div style={{ fontSize: 9, color: 'var(--rail-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assets</div><div className="num pos" style={{ fontSize: 11.5, marginTop: 1 }}>${Math.round(assets / 1000)}k</div></div>
-          <div><div style={{ fontSize: 9, color: 'var(--rail-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Debts</div><div className="num neg" style={{ fontSize: 11.5, marginTop: 1 }}>${Math.round(Math.abs(debts) / 1000)}k</div></div>
+          <div><div style={{ fontSize: 9, color: 'var(--rail-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assets</div><div className="num" style={{ fontSize: 11.5, marginTop: 1, color: 'var(--rail-pos)' }}>${Math.round(assets / 1000)}k</div></div>
+          <div><div style={{ fontSize: 9, color: 'var(--rail-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Debts</div><div className="num" style={{ fontSize: 11.5, marginTop: 1, color: 'var(--rail-neg)' }}>${Math.round(Math.abs(debts) / 1000)}k</div></div>
         </div>
       </div>
       <div style={{ padding: '7px 14px', borderTop: '1px solid var(--rail-line)', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>

@@ -60,7 +60,7 @@ function MbHome() {
         <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 500 }}>{checking.name} · {checking.inst}</div>
         <div className="num" style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', margin: '6px 0 12px' }}>${fmtN(checking.balance)}</div>
         <div style={{ display: 'flex', gap: 8 }}>
-          {['Send', 'Request', 'Pay bill'].map(a => <div key={a} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '7px 0', borderRadius: 'var(--r-ctrl)', background: 'rgba(255,255,255,0.16)' }}>{a}</div>)}
+          {['Send', 'Request', 'Pay bill'].map(a => <div key={a} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '7px 0', borderRadius: 'var(--r-ctrl)', background: 'rgba(255,255,255,0.12)' }}>{a}</div>)}
         </div>
       </div>
 

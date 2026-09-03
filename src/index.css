@@ -55,8 +55,8 @@
   --line-strong:oklch(0.80 var(--nC) var(--nH));
   --text:       oklch(0.255 calc(var(--nC) * 1.4) var(--nH));
   --text-2:     oklch(0.448 calc(var(--nC) * 1.2) var(--nH));
-  --text-3:     oklch(0.585 var(--nC) var(--nH));
-  --text-faint: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
+  --text-3:     oklch(0.52 var(--nC) var(--nH));
+  --text-faint: oklch(0.54 calc(var(--nC) * 0.8) var(--nH));
 
   --accent:      oklch(var(--aL) var(--aC) var(--aH));
   --accent-hi:   oklch(calc(var(--aL) - 0.06) var(--aC) var(--aH));
@@ -77,7 +77,9 @@
   --rail-line:   oklch(1 0 0 / 0.08);
   --rail-text:   oklch(0.96 calc(var(--nC) * 0.4) var(--nH));
   --rail-text-2: oklch(0.70 calc(var(--nC) * 0.8) var(--nH));
-  --rail-text-3: oklch(0.55 calc(var(--nC) * 0.8) var(--nH));
+  --rail-text-3: oklch(0.64 calc(var(--nC) * 0.8) var(--nH));
+  --rail-pos:    oklch(0.72 0.13 152);
+  --rail-neg:    oklch(0.72 0.17 25);
 
   --shadow-sm: 0 1px 2px oklch(var(--nH) 0 0 / 0), 0 1px 2px oklch(0.2 0.02 var(--nH) / 0.06);
   --shadow:    0 1px 3px oklch(0.2 0.02 var(--nH) / 0.07), 0 4px 16px oklch(0.2 0.02 var(--nH) / 0.06);
