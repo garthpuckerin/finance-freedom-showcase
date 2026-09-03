@@ -23,7 +23,7 @@ Make the existing Finance Freedom showcase verifiably release-ready without chan
 
 ## Design
 
-Financial derivations will be exposed through a small pure module that owns canonical totals and reconciliation rules. Existing fixture consumers will import that module rather than duplicating values. Node's built-in test runner will verify the accounting invariants without introducing a second unit-test framework.
+Financial derivations already live behind the pure `src/derive.js` and `src/data.js` boundary. Node's built-in test runner will characterize that existing boundary and verify its accounting invariants without introducing a second unit-test framework or changing product behavior.
 
 Playwright remains the behavioral gate. Its server command will use this repository's own `npm run dev` script, and the gate helper will use session storage because that is the application's source of truth. Accessibility and metadata assertions will run against the same three user-visible surfaces already covered by smoke tests.
 
@@ -33,8 +33,7 @@ The `test:release` command will be the single local and CI contract: build, unit
 
 - The original launcher failure is reproduced before the configuration fix.
 - The desktop and mobile gate failures are reproduced before the storage fix.
-- Financial tests fail before the pure reconciliation module exists.
+- Financial characterization tests pass against the existing pure derivation boundary and cover the advertised reconciliation invariants.
 - All prior and new tests pass after implementation.
 - The production build succeeds.
 - The working tree contains no generated test or build artifacts.
-
