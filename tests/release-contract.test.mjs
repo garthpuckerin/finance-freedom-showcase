@@ -22,8 +22,13 @@ const attributeValue = (tag, attribute) => {
   return undefined;
 };
 
+const headContent = (html) => {
+  const activeHtml = html.replace(/<!--[\s\S]*?-->/g, '');
+  return activeHtml.match(/<head(?:\s[^>]*)?>([\s\S]*?)<\/head\s*>/i)?.[1] ?? '';
+};
+
 const metaContent = (attribute, value, html = indexHtml) => {
-  const tags = html
+  const tags = headContent(html)
     .match(/<meta\b[^>]*>/gi)
     ?.filter((candidate) => attributeValue(candidate, attribute) === value) ?? [];
 
@@ -38,6 +43,9 @@ const metaContent = (attribute, value, html = indexHtml) => {
 
   return content;
 };
+
+const titleContent = (html = indexHtml) =>
+  headContent(html).match(/<title>([^<]+)<\/title>/i)?.[1];
 
 const assertHttpsUrl = (value, label) => {
   let parsed;
@@ -55,8 +63,10 @@ const assertHttpsUrl = (value, label) => {
 
 test('metadata lookup ignores lookalike attribute names', () => {
   const html = [
+    '<html><head>',
     '<meta data-property="og:image" content="https://example.test/lookalike.png">',
     '<meta property="og:image" content="https://example.test/canonical.png">',
+    '</head><body></body></html>',
   ].join('');
 
   assert.strictEqual(
@@ -71,14 +81,54 @@ test('metadata lookup ignores lookalike attribute names', () => {
 
 test('metadata lookup rejects duplicate matching tags', () => {
   const html = [
+    '<html><head>',
     '<meta property="og:image" content="https://example.test/first.png">',
     '<meta property="og:image" content="https://example.test/second.png">',
+    '</head><body></body></html>',
   ].join('');
 
   assert.throws(
     () => metaContent('property', 'og:image', html),
     /expected exactly one matching meta tag; found 2/
   );
+});
+
+test('metadata lookup rejects commented-out matching tags', () => {
+  const html = [
+    '<html><head>',
+    '<!-- <meta property="og:image" content="https://example.test/commented.png"> -->',
+    '</head><body></body></html>',
+  ].join('');
+
+  assert.throws(
+    () => metaContent('property', 'og:image', html),
+    /expected exactly one matching meta tag; found 0/
+  );
+});
+
+test('title lookup rejects commented-out title tags', () => {
+  const html = [
+    '<html><head>',
+    '<!-- <title>Finance Freedom</title> -->',
+    '</head><body></body></html>',
+  ].join('');
+
+  assert.strictEqual(titleContent(html), undefined);
+});
+
+test('metadata and title lookup ignore tags outside head', () => {
+  const html = [
+    '<html><head></head><body>',
+    '<meta property="og:image" content="https://example.test/body.png">',
+    '<title>Finance Freedom</title>',
+    '</body></html>',
+  ].join('');
+
+  assert.throws(
+    () => metaContent('property', 'og:image', html),
+    /expected exactly one matching meta tag; found 0/
+  );
+  assert.strictEqual(titleContent(html), undefined);
 });
 
 test('Open Graph image validation rejects relative and non-HTTPS URLs', () => {
@@ -95,7 +145,7 @@ test('release metadata and scripts remain canonical', () => {
   assert.strictEqual(packageLock.packages?.['']?.name, packageJson.name);
   assert.ok(packageJson.description?.trim(), 'package description must not be empty');
 
-  assert.strictEqual(indexHtml.match(/<title>([^<]+)<\/title>/i)?.[1], 'Finance Freedom');
+  assert.strictEqual(titleContent(), 'Finance Freedom');
   assert.strictEqual(
     metaContent('name', 'description'),
     'The soul of Microsoft Money, rebuilt for 2026. A 15-screen desktop finance cockpit — registers, cash-flow forecast, budgets in five styles (envelopes to FIRE), reports, goals. Portfolio demo on mock data, by Garth Puckerin.'
