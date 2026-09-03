@@ -25,12 +25,18 @@ test('release metadata and scripts remain canonical', () => {
   assert.ok(packageJson.description?.trim(), 'package description must not be empty');
 
   assert.strictEqual(indexHtml.match(/<title>([^<]+)<\/title>/i)?.[1], 'Finance Freedom');
-  assert.ok(metaContent('name', 'description')?.trim(), 'HTML description must not be empty');
+  assert.strictEqual(
+    metaContent('name', 'description'),
+    'The soul of Microsoft Money, rebuilt for 2026. A 15-screen desktop finance cockpit — registers, cash-flow forecast, budgets in five styles (envelopes to FIRE), reports, goals. Portfolio demo on mock data, by Garth Puckerin.'
+  );
   assert.strictEqual(
     metaContent('property', 'og:title'),
     'Finance Freedom — the soul of Microsoft Money, rebuilt for 2026'
   );
-  assert.ok(metaContent('property', 'og:description')?.trim(), 'Open Graph description must not be empty');
+  assert.strictEqual(
+    metaContent('property', 'og:description'),
+    'A 15-screen desktop finance cockpit: registers, cash-flow forecast, budgets in five styles (envelopes to FIRE), reports, goals. Local-first, cloud optional. Portfolio demo on mock data.'
+  );
 
   assert.strictEqual(metaContent('name', 'robots'), 'noindex');
 
