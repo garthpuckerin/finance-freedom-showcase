@@ -32,6 +32,13 @@ const SURFACES = [
     ready: page => page.getByRole('heading', { name: 'The same system, at phone scale' }),
   },
   {
+    name: 'forced mobile companion at phone viewport',
+    path: '/?view=mobile',
+    entered: true,
+    viewport: PHONE_VIEWPORT,
+    ready: page => page.getByRole('heading', { name: 'The same system, at phone scale' }),
+  },
+  {
     name: 'automatic phone app',
     path: '/',
     entered: true,
