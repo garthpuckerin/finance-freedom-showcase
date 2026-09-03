@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "node --test tests/*.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:release": "npm run build && npm run test:unit && npm run test:e2e"
   },
   "dependencies": {
     "react": "^18.2.0",
