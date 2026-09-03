@@ -52,7 +52,7 @@ function SeField({ label, hint, children }) {
   );
 }
 
-const primaryBtn = { fontSize: 12, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '7px 13px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
+const primaryBtn = { fontSize: 12, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent-fill)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '7px 13px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
 const ghostBtn = { fontSize: 12, fontWeight: 600, color: 'var(--text-2)', background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 'var(--r-ctrl)', padding: '7px 13px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
 
 const toast = (m) => window.__ffToast && window.__ffToast(m);
@@ -95,7 +95,7 @@ function ProfileSection() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
       <Card title="Profile">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 14, borderBottom: '1px solid var(--line)' }}>
-          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 20, fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>DU</div>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--accent-fill)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 20, fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>DU</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Demo User</div>
             <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>Owner · member since 2023</div>
@@ -121,7 +121,7 @@ function ProfileSection() {
         <div style={{ borderTop: '1px solid var(--line)' }}>
           {members.map((m, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: i < members.length - 1 ? '1px solid var(--line)' : 0 }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', background: m.accent ? 'var(--accent)' : 'var(--surface-3)', color: m.accent ? 'var(--on-accent)' : 'var(--text-2)', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>{m.initials}</div>
+              <div style={{ width: 34, height: 34, borderRadius: '50%', background: m.accent ? 'var(--accent-fill)' : 'var(--surface-3)', color: m.accent ? 'var(--on-accent)' : 'var(--text-2)', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>{m.initials}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{m.name}</div>
                 <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{m.email}</div>
@@ -417,7 +417,7 @@ function AboutSection() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
       <Card>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 13, background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 26, fontWeight: 800, fontFamily: 'var(--font-display)', flexShrink: 0 }}>F</div>
+          <div style={{ width: 52, height: 52, borderRadius: 13, background: 'var(--accent-fill)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 26, fontWeight: 800, fontFamily: 'var(--font-display)', flexShrink: 0 }}>F</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 17, fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: 'var(--display-tracking)', color: 'var(--text)' }}>Finance Freedom</div>
             <div style={{ fontSize: 12.5, color: 'var(--text-3)', marginTop: 2 }}>Version 3.2.0 · build 2026.05.29</div>

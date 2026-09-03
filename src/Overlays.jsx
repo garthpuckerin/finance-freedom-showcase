@@ -23,7 +23,7 @@ const { useState: useOvS, useEffect: useOvE, useMemo: useOvM, useRef: useOvR } =
 const ovScrim = { position: 'fixed', inset: 0, zIndex: 130, background: 'oklch(0.18 0.02 256 / 0.42)', backdropFilter: 'blur(2px)' };
 const ovInput = { width: '100%', boxSizing: 'border-box', font: 'inherit', fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text)', background: 'var(--surface-2)', border: '1px solid var(--line-2)', borderRadius: 'var(--r-ctrl)', padding: '9px 11px', outline: 'none' };
 const ovLabel = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-faint)', display: 'block', marginBottom: 6 };
-const ovPrimary = { fontSize: 13, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '9px 16px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
+const ovPrimary = { fontSize: 13, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent-fill)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '9px 16px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
 const ovGhost = { fontSize: 13, fontWeight: 600, color: 'var(--text-2)', background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 'var(--r-ctrl)', padding: '9px 16px', cursor: 'pointer', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap' };
 
 const CATS = ['Income : Salary', 'Income : Interest', 'Housing : Rent', 'Food : Groceries', 'Food : Dining', 'Food : Coffee', 'Transport : Fuel', 'Transport : Rideshare', 'Shopping : Household', 'Utilities : Electric', 'Utilities : Internet', 'Health : Fitness', 'Health : Pharmacy', 'Entertainment : Streaming', 'Transfer', 'Savings'];
@@ -224,7 +224,7 @@ export function ReconcileModal({ open, account, txs, onClose, onReconcile }) {
           const on = !!ticked[t.id];
           return (
             <div key={t.id} onClick={() => setTicked(s => ({ ...s, [t.id]: !s[t.id] }))} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '8px 12px', borderBottom: i < nonRecon.length - 1 ? '1px solid var(--line)' : 0, cursor: 'pointer', background: on ? 'var(--accent-weak)' : (i % 2 ? 'var(--surface-2)' : 'transparent') }}>
-              <span style={{ width: 17, height: 17, borderRadius: 5, border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'), background: on ? 'var(--accent)' : 'transparent', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, flexShrink: 0 }}>{on ? '✓' : ''}</span>
+              <span style={{ width: 17, height: 17, borderRadius: 5, border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'), background: on ? 'var(--accent-fill)' : 'transparent', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, flexShrink: 0 }}>{on ? '✓' : ''}</span>
               <span className="num" style={{ fontSize: 11.5, color: 'var(--text-3)', width: 44, flexShrink: 0 }}>{t.date.slice(5).replace('-', '/')}</span>
               <span style={{ flex: 1, fontSize: 12.5, color: 'var(--text)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.payee}</span>
               <span className="num" style={{ fontSize: 12.5, fontWeight: 600, color: t.amount > 0 ? 'var(--pos)' : 'var(--text)' }}>{t.amount > 0 ? '+' : '−'}${fmtN(t.amount)}</span>
@@ -349,7 +349,7 @@ export function LinkAccountFlow({ open, onClose, onLinked }) {
             const on = !!picked[i];
             return (
               <div key={i} onClick={() => setPicked(p => ({ ...p, [i]: !p[i] }))} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', border: '1px solid ' + (on ? 'var(--accent)' : 'var(--line-2)'), borderRadius: 'var(--r-ctrl)', cursor: 'pointer', background: on ? 'var(--accent-weak)' : 'var(--surface)' }}>
-                <span style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'), background: on ? 'var(--accent)' : 'transparent', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, flexShrink: 0 }}>{on ? '✓' : ''}</span>
+                <span style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'), background: on ? 'var(--accent-fill)' : 'transparent', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, flexShrink: 0 }}>{on ? '✓' : ''}</span>
                 <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{a.name}</div><div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{a.kind} ····{a.mask}</div></div>
                 <span className="num" style={{ fontSize: 13, fontWeight: 600, color: a.bal < 0 ? 'var(--neg)' : 'var(--text)' }}>{a.bal < 0 ? '−' : ''}${fmtN(a.bal)}</span>
               </div>

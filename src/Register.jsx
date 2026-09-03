@@ -177,7 +177,7 @@ export function Register({ activeAccount, txs: txsProp, setTxs: setTxsProp }) {
               <div style={{ fontSize: 30, color: 'var(--text-faint)', marginBottom: 10 }}>{account.glyph}</div>
               <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>No transactions in this view</div>
               <div style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 4, maxWidth: 340, margin: '4px auto 0' }}>Add transactions by hand, import a statement (QIF/OFX/CSV) — or link {account.inst}, if you want to. Manual tracking is a first-class citizen here.</div>
-              <button onClick={() => window.__ffAdd && window.__ffAdd()} style={{ marginTop: 16, background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 8, padding: '8px 16px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)' }}>Add a transaction</button>
+              <button onClick={() => window.__ffAdd && window.__ffAdd()} style={{ marginTop: 16, background: 'var(--accent-fill)', color: 'var(--on-accent)', border: 0, borderRadius: 8, padding: '8px 16px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)' }}>Add a transaction</button>
             </div>
           )}
         </div>

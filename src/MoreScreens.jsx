@@ -137,7 +137,7 @@ function BillsCalendar({ events }) {
             <div key={i} onClick={() => evs.length && setSel(isSel ? null : dayKey(d))}
               style={{ borderRight: (i % 7 !== 6) ? '1px solid var(--line)' : 0, borderBottom: i < visible.length - 7 ? '1px solid var(--line)' : 0, padding: '5px 6px', background: isSel ? 'var(--accent-weak)' : (inMonth ? 'transparent' : 'var(--surface-2)'), cursor: evs.length ? 'pointer' : 'default', minWidth: 0, position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 3 }}>
-                <span className="num" style={{ fontSize: 11, fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--on-accent)' : (inMonth ? 'var(--text-2)' : 'var(--text-faint)'), background: isToday ? 'var(--accent)' : 'transparent', width: 19, height: 19, borderRadius: '50%', display: 'grid', placeItems: 'center' }}>{d.getDate()}</span>
+                <span className="num" style={{ fontSize: 11, fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--on-accent)' : (inMonth ? 'var(--text-2)' : 'var(--text-faint)'), background: isToday ? 'var(--accent-fill)' : 'transparent', width: 19, height: 19, borderRadius: '50%', display: 'grid', placeItems: 'center' }}>{d.getDate()}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {evs.slice(0, 3).map((e, j) => (

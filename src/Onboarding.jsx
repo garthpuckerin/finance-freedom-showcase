@@ -12,7 +12,7 @@ import { BUDGET_STYLES, useBudgetStyle } from './BudgetStyles.jsx';
 
 const { useState: useObS } = React;
 
-const nextBtn = { fontSize: 12.5, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '8px 18px', cursor: 'pointer', fontFamily: 'var(--font-ui)' };
+const nextBtn = { fontSize: 12.5, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent-fill)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '8px 18px', cursor: 'pointer', fontFamily: 'var(--font-ui)' };
 const backBtn = { fontSize: 12.5, fontWeight: 600, color: 'var(--text-2)', background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 'var(--r-ctrl)', padding: '8px 14px', cursor: 'pointer', fontFamily: 'var(--font-ui)' };
 
 function Dots({ step, count }) {

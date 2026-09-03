@@ -22,7 +22,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'pnpm --filter finance-freedom dev',
+    command: 'npm run dev -- --host 127.0.0.1',
     url: 'http://localhost:3400',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

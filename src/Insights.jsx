@@ -98,7 +98,7 @@ export function SearchScreen() {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 11 }}>
             {cats.map(c => (
-              <button key={c} onClick={() => setCat(c)} style={{ fontSize: 11.5, fontWeight: cat === c ? 600 : 500, padding: '4px 11px', borderRadius: 'var(--r-pill)', cursor: 'pointer', fontFamily: 'var(--font-ui)', border: '1px solid ' + (cat === c ? 'transparent' : 'var(--line-2)'), background: cat === c ? 'var(--accent)' : 'var(--surface)', color: cat === c ? 'var(--on-accent)' : 'var(--text-2)' }}>{c === 'all' ? 'All' : c}</button>
+              <button key={c} onClick={() => setCat(c)} style={{ fontSize: 11.5, fontWeight: cat === c ? 600 : 500, padding: '4px 11px', borderRadius: 'var(--r-pill)', cursor: 'pointer', fontFamily: 'var(--font-ui)', border: '1px solid ' + (cat === c ? 'transparent' : 'var(--line-2)'), background: cat === c ? 'var(--accent-fill)' : 'var(--surface)', color: cat === c ? 'var(--on-accent)' : 'var(--text-2)' }}>{c === 'all' ? 'All' : c}</button>
             ))}
           </div>
         </div>
