@@ -25,7 +25,7 @@ import { test, expect } from '@playwright/test'
 const ENTERED_KEY = 'ff:entered:v1'
 async function enterDemo(page) {
   await page.addInitScript((key) => {
-    try { window.localStorage.setItem(key, 'true') } catch (e) {}
+    try { window.sessionStorage.setItem(key, 'true') } catch (e) {}
   }, ENTERED_KEY)
 }
 

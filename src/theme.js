@@ -11,7 +11,7 @@ export const THEMES = ['light', 'dark'];
 export const ACCENTS = [
   ['evergreen', 'Evergreen', 'oklch(0.47 0.094 159)'],
   ['ink', 'Ink Blue', 'oklch(0.47 0.15 262)'],
-  ['teal', 'Teal', 'oklch(0.52 0.09 198)'],
+  ['teal', 'Teal', 'oklch(0.49 0.09 198)'],
   ['amber', 'Amber', 'oklch(0.62 0.13 64)'],
   ['violet', 'Violet', 'oklch(0.5 0.17 292)'],
 ];

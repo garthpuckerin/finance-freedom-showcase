@@ -60,7 +60,7 @@ export function AssistantScreen() {
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: 'var(--pad) 22px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {msgs.map((m, i) => m.role === 'u' ? (
-            <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '78%', background: 'var(--accent)', color: 'var(--on-accent)', padding: '9px 14px', borderRadius: '14px 14px 4px 14px', fontSize: 13.5, lineHeight: 1.5, boxShadow: 'var(--shadow-sm)' }}>{m.text}</div>
+            <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '78%', background: 'var(--accent-fill)', color: 'var(--on-accent)', padding: '9px 14px', borderRadius: '14px 14px 4px 14px', fontSize: 13.5, lineHeight: 1.5, boxShadow: 'var(--shadow-sm)' }}>{m.text}</div>
           ) : (
             <div key={i} style={{ alignSelf: 'flex-start', maxWidth: '88%', display: 'flex', gap: 11 }}>
               <div style={{ width: 30, height: 30, borderRadius: 9, background: 'var(--accent-weak)', color: 'var(--accent)', display: 'grid', placeItems: 'center', fontSize: 15, flexShrink: 0, border: '1px solid var(--accent-line)' }}>✦</div>
@@ -77,7 +77,7 @@ export function AssistantScreen() {
       <div style={{ flexShrink: 0, borderTop: '1px solid var(--line)', background: 'var(--surface)', padding: '12px 22px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 10, padding: '6px 6px 6px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-2)', borderRadius: 'var(--r-pill)' }}>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} placeholder="Ask about your money — grounded in your register…" style={{ flex: 1, border: 0, outline: 'none', background: 'transparent', font: 'inherit', fontFamily: 'var(--font-ui)', fontSize: 13.5, color: 'var(--text)' }} />
-          <button onClick={() => send()} disabled={!input.trim()} style={{ width: 34, height: 34, borderRadius: '50%', border: 0, cursor: input.trim() ? 'pointer' : 'default', background: input.trim() ? 'var(--accent)' : 'var(--line-strong)', color: 'var(--on-accent)', fontSize: 15, display: 'grid', placeItems: 'center', flexShrink: 0 }}>↑</button>
+          <button onClick={() => send()} disabled={!input.trim()} style={{ width: 34, height: 34, borderRadius: '50%', border: 0, cursor: input.trim() ? 'pointer' : 'default', background: input.trim() ? 'var(--accent-fill)' : 'var(--line-strong)', color: 'var(--on-accent)', fontSize: 15, display: 'grid', placeItems: 'center', flexShrink: 0 }}>↑</button>
         </div>
         <div style={{ maxWidth: 760, margin: '7px auto 0', fontSize: 10.5, color: 'var(--text-faint)', textAlign: 'center' }}>Answers are generated from your local register data. Not financial advice.</div>
       </div>
