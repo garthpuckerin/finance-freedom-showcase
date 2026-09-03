@@ -134,7 +134,7 @@ export function Sidebar({ screen, acctDrawerOpen, onNav, onToggleAccounts }) {
     }}>
       {/* brand */}
       <div style={{ padding: '14px 14px', borderBottom: '1px solid var(--rail-line)', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-        <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 15, fontWeight: 800, flexShrink: 0, fontFamily: 'var(--font-display)' }}>F</div>
+        <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--accent-fill)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 15, fontWeight: 800, flexShrink: 0, fontFamily: 'var(--font-display)' }}>F</div>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--rail-text)', fontFamily: 'var(--font-display)', letterSpacing: 'var(--display-tracking)' }}>Finance Freedom</div>
           <div style={{ fontSize: 10, color: 'var(--rail-text-3)', marginTop: -1 }}>{user.household} · {AppData.labels.monthYear}</div>

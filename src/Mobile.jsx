@@ -56,7 +56,7 @@ function MbHome() {
   return (
     <div style={{ padding: '14px 16px 96px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* hero balance */}
-      <div style={Object.assign({}, mbCard, { padding: 18, background: 'var(--accent)', border: 'none', color: 'var(--on-accent)' })}>
+      <div style={Object.assign({}, mbCard, { padding: 18, background: 'var(--accent-fill)', border: 'none', color: 'var(--on-accent)' })}>
         <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 500 }}>{checking.name} · {checking.inst}</div>
         <div className="num" style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', margin: '6px 0 12px' }}>${fmtN(checking.balance)}</div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -445,7 +445,7 @@ function MobileScreen({ tab, setTab }) {
         </>
       ) : (
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-          <MbHeader sub={sub} title={title} onBack={detail ? closeDetail : null} right={!detail && tab === 'home' ? <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)' }}>{userInitials}</div> : null} />
+          <MbHeader sub={sub} title={title} onBack={detail ? closeDetail : null} right={!detail && tab === 'home' ? <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent-fill)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)' }}>{userInitials}</div> : null} />
           {body}
         </div>
       )}
@@ -456,8 +456,9 @@ function MobileScreen({ tab, setTab }) {
 
 export function MobilePhone({ initial = 'home' }) {
   const [tab, setTab] = useState(initial);
+  const dark = document.documentElement.dataset.theme === 'dark';
   return (
-    <IOSDevice>
+    <IOSDevice dark={dark}>
       <MobileScreen tab={tab} setTab={setTab} />
     </IOSDevice>
   );

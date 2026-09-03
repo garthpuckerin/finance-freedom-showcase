@@ -78,7 +78,7 @@ export function Topbar({ title, sub, crumbs, onAdd, onCmd, right }) {
       </button>
       <button onClick={onAdd} style={{
         display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px', borderRadius: 8, cursor: 'pointer',
-        background: 'var(--accent)', border: 0, color: 'var(--on-accent)', fontFamily: 'var(--font-ui)', fontSize: 12.5, fontWeight: 600,
+        background: 'var(--accent-fill)', border: 0, color: 'var(--on-accent)', fontFamily: 'var(--font-ui)', fontSize: 12.5, fontWeight: 600,
       }}>
         <span style={{ fontSize: 14 }}>⊕</span> Add
       </button>

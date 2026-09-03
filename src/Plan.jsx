@@ -76,7 +76,7 @@ export function DebtScreen() {
               const target = i === 0;
               return (
                 <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid var(--line)' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: target ? 'var(--accent)' : 'var(--surface-3)', color: target ? 'var(--on-accent)' : 'var(--text-3)', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0, fontFamily: 'var(--font-num)' }}>{i + 1}</div>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: target ? 'var(--accent-fill)' : 'var(--surface-3)', color: target ? 'var(--on-accent)' : 'var(--text-3)', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0, fontFamily: 'var(--font-num)' }}>{i + 1}</div>
                   <span style={{ width: 9, height: 9, borderRadius: 3, background: d.color, flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{d.name}</div>
@@ -137,7 +137,7 @@ export function RulesScreen() {
           <Stat k="Auto-Categorized" v={`${totalHits}`} d="transactions this year" dColor="var(--pos)" />
           <Stat k="Coverage" v="94%" d="of imports matched a rule" />
         </div>
-        <Card title="Categorization Rules" pad={false} action={<button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '6px 12px', cursor: 'pointer', fontFamily: 'var(--font-ui)' }}>⊕ New Rule</button>}>
+        <Card title="Categorization Rules" pad={false} action={<button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 600, color: 'var(--on-accent)', background: 'var(--accent-fill)', border: 0, borderRadius: 'var(--r-ctrl)', padding: '6px 12px', cursor: 'pointer', fontFamily: 'var(--font-ui)' }}>⊕ New Rule</button>}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-ui)', tableLayout: 'fixed' }}>
             <thead><tr>
               <th style={TH3({ width: 56 })}>On</th>
