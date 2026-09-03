@@ -5,23 +5,94 @@ import { readFileSync } from 'node:fs';
 const packageJson = JSON.parse(
   readFileSync(new URL('../package.json', import.meta.url), 'utf8')
 );
+const packageLock = JSON.parse(
+  readFileSync(new URL('../package-lock.json', import.meta.url), 'utf8')
+);
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 
 const attributeValue = (tag, attribute) => {
-  const match = tag.match(new RegExp(`\\b${attribute}=["']([^"']*)["']`, 'i'));
-  return match?.[1];
+  const attributes = tag.matchAll(/\s+([^\s=/>]+)\s*=\s*(["'])(.*?)\2/g);
+
+  for (const match of attributes) {
+    if (match[1].toLowerCase() === attribute.toLowerCase()) {
+      return match[3];
+    }
+  }
+
+  return undefined;
 };
 
-const metaContent = (attribute, value) => {
-  const tag = indexHtml
+const metaContent = (attribute, value, html = indexHtml) => {
+  const tags = html
     .match(/<meta\b[^>]*>/gi)
-    ?.find((candidate) => attributeValue(candidate, attribute) === value);
+    ?.filter((candidate) => attributeValue(candidate, attribute) === value) ?? [];
 
-  return tag ? attributeValue(tag, 'content') : undefined;
+  if (tags.length !== 1) {
+    throw new Error(`expected exactly one matching meta tag; found ${tags.length}`);
+  }
+
+  const content = attributeValue(tags[0], 'content');
+  if (content === undefined) {
+    throw new Error('matching meta tag must declare content');
+  }
+
+  return content;
 };
+
+const assertHttpsUrl = (value, label) => {
+  let parsed;
+
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error(`${label} must use an absolute HTTPS URL`);
+  }
+
+  if (parsed.protocol !== 'https:') {
+    throw new Error(`${label} must use an absolute HTTPS URL`);
+  }
+};
+
+test('metadata lookup ignores lookalike attribute names', () => {
+  const html = [
+    '<meta data-property="og:image" content="https://example.test/lookalike.png">',
+    '<meta property="og:image" content="https://example.test/canonical.png">',
+  ].join('');
+
+  assert.strictEqual(
+    attributeValue('<meta data-property="og:image" content="lookalike">', 'property'),
+    undefined
+  );
+  assert.strictEqual(
+    metaContent('property', 'og:image', html),
+    'https://example.test/canonical.png'
+  );
+});
+
+test('metadata lookup rejects duplicate matching tags', () => {
+  const html = [
+    '<meta property="og:image" content="https://example.test/first.png">',
+    '<meta property="og:image" content="https://example.test/second.png">',
+  ].join('');
+
+  assert.throws(
+    () => metaContent('property', 'og:image', html),
+    /expected exactly one matching meta tag; found 2/
+  );
+});
+
+test('Open Graph image validation rejects relative and non-HTTPS URLs', () => {
+  for (const value of ['/og.png', 'http://example.test/og.png', 'data:image/png;base64,AAAA']) {
+    assert.throws(() => assertHttpsUrl(value, 'Open Graph image'), /must use an absolute HTTPS URL/);
+  }
+
+  assert.doesNotThrow(() => assertHttpsUrl('https://example.test/og.png', 'Open Graph image'));
+});
 
 test('release metadata and scripts remain canonical', () => {
   assert.strictEqual(packageJson.name, 'finance-freedom-showcase');
+  assert.strictEqual(packageLock.name, packageJson.name);
+  assert.strictEqual(packageLock.packages?.['']?.name, packageJson.name);
   assert.ok(packageJson.description?.trim(), 'package description must not be empty');
 
   assert.strictEqual(indexHtml.match(/<title>([^<]+)<\/title>/i)?.[1], 'Finance Freedom');
@@ -42,7 +113,7 @@ test('release metadata and scripts remain canonical', () => {
 
   const openGraphImage = metaContent('property', 'og:image');
   assert.ok(openGraphImage, 'Open Graph image must be declared');
-  assert.doesNotThrow(() => new URL(openGraphImage), 'Open Graph image must use an absolute URL');
+  assertHttpsUrl(openGraphImage, 'Open Graph image');
   assert.strictEqual(metaContent('property', 'og:image:width'), '2400');
   assert.strictEqual(metaContent('property', 'og:image:height'), '1260');
   assert.strictEqual(metaContent('name', 'twitter:card'), 'summary_large_image');
