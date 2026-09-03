@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { parse } from 'parse5';
+
+const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
 const packageJson = JSON.parse(
   readFileSync(new URL('../package.json', import.meta.url), 'utf8')
@@ -9,43 +12,102 @@ const packageLock = JSON.parse(
   readFileSync(new URL('../package-lock.json', import.meta.url), 'utf8')
 );
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const workflow = readFileSync(
+  new URL('../.github/workflows/release.yml', import.meta.url),
+  'utf8'
+);
 
-const attributeValue = (tag, attribute) => {
-  const attributes = tag.matchAll(/\s+([^\s=/>]+)\s*=\s*(["'])(.*?)\2/g);
+const significantYamlLines = (yaml) =>
+  yaml
+    .split(/\r?\n/u)
+    .filter((line) => line.trim() && !line.trimStart().startsWith('#'));
 
-  for (const match of attributes) {
-    if (match[1].toLowerCase() === attribute.toLowerCase()) {
-      return match[3];
-    }
+const elementAttributes = (element) => {
+  const attributes = new Map();
+  for (const attribute of element.attrs) {
+    assert.ok(
+      !attributes.has(attribute.name),
+      `duplicate ${attribute.name} attribute on <${element.tagName}>`
+    );
+    attributes.set(attribute.name, attribute.value);
   }
-
-  return undefined;
+  return attributes;
 };
 
-const headContent = (html) => {
-  const activeHtml = html.replace(/<!--[\s\S]*?-->/g, '');
-  return activeHtml.match(/<head(?:\s[^>]*)?>([\s\S]*?)<\/head\s*>/i)?.[1] ?? '';
+const findElements = (root, tagName) => {
+  const matches = [];
+  for (const child of root.childNodes ?? []) {
+    if (child.nodeName === tagName) matches.push(child);
+    matches.push(...findElements(child, tagName));
+  }
+  return matches;
 };
 
-const metaContent = (attribute, value, html = indexHtml) => {
-  const tags = headContent(html)
-    .match(/<meta\b[^>]*>/gi)
-    ?.filter((candidate) => attributeValue(candidate, attribute) === value) ?? [];
+const textContent = (element) =>
+  (element.childNodes ?? [])
+    .map((child) => (child.nodeName === '#text' ? child.value : textContent(child)))
+    .join('');
 
-  if (tags.length !== 1) {
-    throw new Error(`expected exactly one matching meta tag; found ${tags.length}`);
-  }
-
-  const content = attributeValue(tags[0], 'content');
-  if (content === undefined) {
-    throw new Error('matching meta tag must declare content');
-  }
-
-  return content;
+const parsedDocument = (html) => {
+  const document = parse(html, { scriptingEnabled: true });
+  const htmlElements = findElements(document, 'html');
+  assert.strictEqual(
+    htmlElements.length,
+    1,
+    'parsed document must contain exactly one <html> element'
+  );
+  const heads = findElements(htmlElements[0], 'head');
+  assert.strictEqual(heads.length, 1, 'parsed document must contain exactly one active <head>');
+  return { document, head: heads[0] };
 };
 
-const titleContent = (html = indexHtml) =>
-  headContent(html).match(/<title>([^<]+)<\/title>/i)?.[1];
+const belongsTo = (node, ancestor) => {
+  for (let parent = node.parentNode; parent; parent = parent.parentNode) {
+    if (parent === ancestor) return true;
+  }
+  return false;
+};
+
+const requireUniqueHeadMeta = (html, selector) => {
+  const { document, head } = parsedDocument(html);
+  const matches = findElements(document, 'meta')
+    .map((element) => ({ attributes: elementAttributes(element), element }))
+    .filter(({ attributes }) =>
+      Object.entries(selector).every(
+        ([name, value]) => attributes.get(name.toLowerCase()) === value
+      )
+    );
+  const selectorLabel = Object.entries(selector)
+    .map(([name, value]) => `${name}="${value}"`)
+    .join(' ');
+
+  assert.strictEqual(
+    matches.length,
+    1,
+    `expected exactly one active <meta ${selectorLabel}>`
+  );
+  assert.ok(
+    belongsTo(matches[0].element, head),
+    `<meta ${selectorLabel}> must be inside the active <head>`
+  );
+  return matches[0].attributes;
+};
+
+const requireUniqueHeadTitle = (html) => {
+  const { document, head } = parsedDocument(html);
+  const titles = findElements(document, 'title').filter(
+    (element) => element.namespaceURI === HTML_NAMESPACE
+  );
+
+  assert.strictEqual(titles.length, 1, 'document must contain exactly one active <title>');
+  assert.ok(belongsTo(titles[0], head), 'active <title> must be inside the active <head>');
+  return textContent(titles[0]).trim();
+};
+
+const metaContent = (attribute, value, html = indexHtml) =>
+  requireUniqueHeadMeta(html, { [attribute]: value }).get('content');
+
+const titleContent = (html = indexHtml) => requireUniqueHeadTitle(html);
 
 const assertHttpsUrl = (value, label) => {
   let parsed;
@@ -68,15 +130,17 @@ test('metadata lookup ignores lookalike attribute names', () => {
     '<meta property="og:image" content="https://example.test/canonical.png">',
     '</head><body></body></html>',
   ].join('');
+  const lookalikeOnly = [
+    '<html><head>',
+    '<meta data-property="og:image" content="https://example.test/lookalike.png">',
+    '</head><body></body></html>',
+  ].join('');
 
-  assert.strictEqual(
-    attributeValue('<meta data-property="og:image" content="lookalike">', 'property'),
-    undefined
-  );
   assert.strictEqual(
     metaContent('property', 'og:image', html),
     'https://example.test/canonical.png'
   );
+  assert.throws(() => metaContent('property', 'og:image', lookalikeOnly), /exactly one active/);
 });
 
 test('metadata lookup rejects duplicate matching tags', () => {
@@ -89,7 +153,7 @@ test('metadata lookup rejects duplicate matching tags', () => {
 
   assert.throws(
     () => metaContent('property', 'og:image', html),
-    /expected exactly one matching meta tag; found 2/
+    /exactly one/
   );
 });
 
@@ -102,7 +166,7 @@ test('metadata lookup rejects commented-out matching tags', () => {
 
   assert.throws(
     () => metaContent('property', 'og:image', html),
-    /expected exactly one matching meta tag; found 0/
+    /exactly one/
   );
 });
 
@@ -113,7 +177,7 @@ test('title lookup rejects commented-out title tags', () => {
     '</head><body></body></html>',
   ].join('');
 
-  assert.strictEqual(titleContent(html), undefined);
+  assert.throws(() => titleContent(html), /exactly one/);
 });
 
 test('metadata and title lookup ignore tags outside head', () => {
@@ -126,9 +190,72 @@ test('metadata and title lookup ignore tags outside head', () => {
 
   assert.throws(
     () => metaContent('property', 'og:image', html),
-    /expected exactly one matching meta tag; found 0/
+    /(exactly one|must be inside)/
   );
-  assert.strictEqual(titleContent(html), undefined);
+  assert.throws(() => titleContent(html), /(exactly one|must be inside)/);
+});
+
+test('metadata parsing rejects inert and raw-content tags', () => {
+  for (const tagName of ['script', 'style', 'template', 'noscript']) {
+    const metaOnly = `
+      <html><head>
+        <${tagName}><meta property="og:title" content="embedded"></${tagName}>
+      </head><body></body></html>`;
+    const titleOnly = `
+      <html><head>
+        <${tagName}><title>embedded</title></${tagName}>
+      </head><body></body></html>`;
+
+    assert.throws(
+      () => metaContent('property', 'og:title', metaOnly),
+      /exactly one/,
+      `<meta> text inside <${tagName}> must not satisfy the contract`
+    );
+    assert.throws(
+      () => titleContent(titleOnly),
+      /exactly one/,
+      `<title> text inside <${tagName}> must not satisfy the contract`
+    );
+  }
+});
+
+test('metadata parsing rejects a fake head inside textarea content', () => {
+  const html = `
+    <html><body><textarea>
+      <head>
+        <meta property="og:title" content="textarea content">
+        <title>textarea content</title>
+      </head>
+    </textarea></body></html>`;
+
+  assert.throws(() => metaContent('property', 'og:title', html), /exactly one/);
+  assert.throws(() => titleContent(html), /exactly one/);
+});
+
+test('title parsing rejects duplicates and titles outside the active head', () => {
+  const duplicate = `
+    <html><head><title>Finance Freedom</title></head><body>
+      <title>Finance Freedom</title>
+    </body></html>`;
+  const outsideHead = `
+    <html><head></head><body><title>Finance Freedom</title></body></html>`;
+
+  assert.throws(() => titleContent(duplicate), /exactly one/);
+  assert.throws(() => titleContent(outsideHead), /must be inside/);
+});
+
+test('title uniqueness ignores SVG accessibility titles', () => {
+  const html = `
+    <html>
+      <head><title>Finance Freedom</title></head>
+      <body>
+        <svg role="img" aria-labelledby="chart-title">
+          <title id="chart-title">Net worth trend</title>
+        </svg>
+      </body>
+    </html>`;
+
+  assert.strictEqual(titleContent(html), 'Finance Freedom');
 });
 
 test('Open Graph image validation rejects relative and non-HTTPS URLs', () => {
@@ -143,7 +270,11 @@ test('release metadata and scripts remain canonical', () => {
   assert.strictEqual(packageJson.name, 'finance-freedom-showcase');
   assert.strictEqual(packageLock.name, packageJson.name);
   assert.strictEqual(packageLock.packages?.['']?.name, packageJson.name);
-  assert.ok(packageJson.description?.trim(), 'package description must not be empty');
+  assert.strictEqual(
+    packageJson.description,
+    'Finance Freedom ("Ledger") — public cockpit demo. A personal-finance command center where every figure derives from one canonical register. Mock data; the engine is private.'
+  );
+  assert.strictEqual(packageJson.devDependencies?.parse5, '8.0.1');
 
   assert.strictEqual(titleContent(), 'Finance Freedom');
   assert.strictEqual(
@@ -174,4 +305,39 @@ test('release metadata and scripts remain canonical', () => {
     'npm run build && npm run test:unit && npm run test:e2e',
     'test:release must run build, unit, and browser gates sequentially'
   );
+});
+
+test('CI runs the shared release command with Node 24 actions', () => {
+  assert.deepStrictEqual(significantYamlLines(workflow), [
+    'name: Finance Freedom Release',
+    'on:',
+    '  push:',
+    '    branches:',
+    '      - main',
+    '  pull_request:',
+    '    branches:',
+    '      - main',
+    'permissions:',
+    '  contents: read',
+    'jobs:',
+    '  release:',
+    '    runs-on: ubuntu-24.04',
+    '    timeout-minutes: 15',
+    '    steps:',
+    '      - name: Checkout',
+    '        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1',
+    '        with:',
+    '          persist-credentials: false',
+    '      - name: Setup Node',
+    '        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020',
+    '        with:',
+    '          node-version: 24.16.0',
+    '          cache: npm',
+    '      - name: Install dependencies',
+    '        run: npm ci',
+    '      - name: Install Chromium',
+    '        run: npx playwright install --with-deps chromium',
+    '      - name: Verify release',
+    '        run: npm run test:release'
+  ]);
 });
