@@ -43,7 +43,7 @@ const SURFACES = [
     path: '/',
     entered: true,
     viewport: PHONE_VIEWPORT,
-    ready: page => page.getByText('Thursday, September 3', { exact: true }),
+    ready: page => page.getByRole('button', { name: /Home/ }),
   },
 ]
 
