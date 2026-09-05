@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Analytics } from '@vercel/analytics/react';
 import './index.css';
 import App from './app.jsx';
 import { MobileApp, MobileStandalone } from './Mobile.jsx';
@@ -86,10 +87,30 @@ function Root() {
     return () => { delete window.__ffSignOut; };
   }, []);
 
-  if (!entered) return <Landing onEnter={enterDemo} />;
-  if (isMobile) return <MobileApp />;
-  if (isSmallScreen) return <MobileStandalone />;
-  return <App />;
+  if (!entered) return (
+    <>
+      <Landing onEnter={enterDemo} />
+      <Analytics />
+    </>
+  );
+  if (isMobile) return (
+    <>
+      <MobileApp />
+      <Analytics />
+    </>
+  );
+  if (isSmallScreen) return (
+    <>
+      <MobileStandalone />
+      <Analytics />
+    </>
+  );
+  return (
+    <>
+      <App />
+      <Analytics />
+    </>
+  );
 }
 
 // Sync the view attribute for the very first paint (before React mounts) so the
