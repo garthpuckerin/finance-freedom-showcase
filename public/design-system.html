@@ -367,7 +367,21 @@ body {
   .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 
   .twocol { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: start; }
-  @media (max-width: 900px){ .swatches, .glyphs { grid-template-columns: repeat(4,1fr);} .twocol,.principle,.specimens{grid-template-columns:1fr;} }
+  /* Mobile collapse. NOTE: .specimens, .demo-grid and .grid-1up-mobile are also set via an
+     inline style="grid-template-columns:..." on their elements (per-instance column counts),
+     which normally beats an external rule of equal importance — so these three need
+     `!important` to actually take effect at this breakpoint (without it the inline value wins
+     and the grid never collapses, however narrow the viewport gets). */
+  @media (max-width: 900px){
+    .swatches, .glyphs { grid-template-columns: repeat(4,1fr);}
+    .twocol, .principle, .specimens, .demo-grid, .grid-1up-mobile { grid-template-columns: 1fr !important; }
+    /* The tweaks toolbar (.topbar .row) is a `display:flex` row with no wrap and no
+       narrow-viewport treatment at all, so on a phone it forces the ENTIRE page to
+       scroll horizontally (brandmark + 3 control groups don't fit in 375px). Let it
+       wrap onto multiple lines instead of pushing the page wider than the viewport. */
+    .topbar .row { flex-wrap: wrap; height: auto; padding: 10px 0; row-gap: 8px; }
+    .brandmark { margin-right: 0; flex-basis: 100%; }
+  }
   .footer { padding: 40px 0 80px; color: var(--text-faint); font-size: 12.5px; }
 </style>
 </head>
@@ -624,7 +638,7 @@ body {
     </div>
 
     <h3 style="margin-top:36px;">Stat cards</h3>
-    <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+    <div class="grid grid-1up-mobile" style="grid-template-columns:repeat(4,1fr);">
       <div class="stat"><div class="k">Net worth</div><div class="v">$248,510</div><div class="d pos">▲ $3,040 this month</div></div>
       <div class="stat"><div class="k">Monthly income</div><div class="v">$9,500</div><div class="d" style="color:var(--text-3)">vs $9,180 avg</div></div>
       <div class="stat"><div class="k">Monthly spend</div><div class="v">$6,284</div><div class="d neg">▲ $540 vs last mo</div></div>
@@ -654,7 +668,7 @@ body {
       </table>
     </div>
 
-    <div class="grid" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
+    <div class="grid grid-1up-mobile" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
       <div class="annot">
         <div class="num-tag">1</div><div class="txt"><b>Reconcile flag, first column</b><p>A single click cycles uncleared → E-cleared → cleared → reconciled. The most-used Money muscle memory, preserved.</p></div>
         <div class="num-tag">2</div><div class="txt"><b>Tabular money, right-aligned</b><p>Payment and Deposit are split columns; decimals line up so the eye can sum a column at a glance.</p></div>
@@ -736,7 +750,7 @@ body {
       </svg>
     </div>
 
-    <div class="grid" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
+    <div class="grid grid-1up-mobile" style="grid-template-columns:1fr 1fr; gap:36px; margin-top:26px;">
       <div class="annot">
         <div class="num-tag">1</div><div class="txt"><b>One line, two states</b><p>Solid = reconciled history. Dashed = projected from scheduled bills, recurring transactions and predicted income. The eye reads continuity, not two charts.</p></div>
         <div class="num-tag">2</div><div class="txt"><b>The "Today" divider</b><p>A quiet vertical rule anchors the present. Everything left already happened; everything right is a forecast you can act on.</p></div>
